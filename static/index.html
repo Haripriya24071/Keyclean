@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KEYCLEAN — Real-time Keystroke Noise Removal</title>
+    <meta name="description" content="KeyClean removes keyboard click noise from your mic in real-time without muffling your voice.">
+    <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <!-- AMBIENT BACKGROUND -->
+    <div class="bg-blob bg-blob-1"></div>
+    <div class="bg-blob bg-blob-2"></div>
+    <div class="bg-blob bg-blob-3"></div>
+
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand" onclick="navigate('home')">
+            <span class="nav-logo-icon">🎹</span>
+            <span class="nav-logo-text">KeyClean</span>
+        </div>
+        <div class="nav-links">
+            <button class="nav-link active" data-page="home" onclick="navigate('home')">Home</button>
+            <button class="nav-link" data-page="dashboard" onclick="navigate('dashboard')">Dashboard</button>
+            <button class="nav-link" data-page="about" onclick="navigate('about')">About</button>
+        </div>
+        <div class="nav-status">
+            <span class="pulse-dot"></span>
+            <span>DSP Ready</span>
+        </div>
+    </nav>
+
+    <!-- ================================================
+         PAGE: HOME
+    ================================================ -->
+    <div class="page" id="page-home">
+        <!-- HERO SECTION -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="hero-badge">🎙️ Real-Time Audio DSP</div>
+                <h1 class="hero-headline">
+                    <span class="bubbly-title">KEYCLEAN</span>
+                </h1>
+                <p class="hero-sub">Stop letting keyboard clicks ruin your calls.<br>We detect and erase them — without touching your voice.</p>
+                <div class="hero-cta">
+                    <button class="btn-primary btn-large" onclick="navigate('dashboard')">
+                        🚀 Try the Dashboard
+                    </button>
+                    <button class="btn-ghost btn-large" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">
+                        Learn How It Works ↓
+                    </button>
+                </div>
+            </div>
+            <!-- Hero Keyboard Visual -->
+            <div class="hero-keyboard-wrap">
+                <div class="hero-keyboard-label">
+                    <span class="mute-badge">🔇 MUTED</span>
+                    <span>Keyboard noise eliminated</span>
+                </div>
+                <div class="mini-keyboard">
+                    <div class="mini-row">
+                        <span class="mkey">Q</span><span class="mkey">W</span><span class="mkey">E</span><span class="mkey">R</span><span class="mkey">T</span><span class="mkey">Y</span><span class="mkey">U</span><span class="mkey">I</span><span class="mkey">O</span><span class="mkey">P</span>
+                    </div>
+                    <div class="mini-row mini-row-shift">
+                        <span class="mkey">A</span><span class="mkey">S</span><span class="mkey">D</span><span class="mkey">F</span><span class="mkey">G</span><span class="mkey">H</span><span class="mkey">J</span><span class="mkey">K</span><span class="mkey">L</span>
+                    </div>
+                    <div class="mini-row mini-row-shift2">
+                        <span class="mkey">Z</span><span class="mkey">X</span><span class="mkey">C</span><span class="mkey">V</span><span class="mkey">B</span><span class="mkey">N</span><span class="mkey">M</span>
+                    </div>
+                    <div class="mini-row">
+                        <span class="mkey mkey-space">SPACE</span>
+                    </div>
+                </div>
+                <!-- Noise wave strike-through effect -->
+                <div class="noise-cross">
+                    <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+                        <polyline points="0,30 20,10 40,50 60,15 80,45 100,20 120,40 140,5 160,50 180,25 200,35"
+                            fill="none" stroke="url(#noiseGrad)" stroke-width="3" class="noise-wave"/>
+                        <line x1="10" y1="55" x2="190" y2="5" stroke="#ff2a7f" stroke-width="3.5" stroke-linecap="round" class="cross-line"/>
+                        <defs>
+                            <linearGradient id="noiseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#00f2fe"/>
+                                <stop offset="100%" stop-color="#4facfe"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATS ROW -->
+        <section class="stats-row">
+            <div class="stat-card glass-card">
+                <span class="stat-num">1.00</span>
+                <span class="stat-label">Precision</span>
+                <span class="stat-desc">Zero false positives on voice</span>
+            </div>
+            <div class="stat-card glass-card">
+                <span class="stat-num">0.80</span>
+                <span class="stat-label">Recall</span>
+                <span class="stat-desc">80% of clicks removed</span>
+            </div>
+            <div class="stat-card glass-card">
+                <span class="stat-num">0.89</span>
+                <span class="stat-label">F1 Score</span>
+                <span class="stat-desc">Strong harmonic balance</span>
+            </div>
+            <div class="stat-card glass-card">
+                <span class="stat-num">0 API</span>
+                <span class="stat-label">Dependencies</span>
+                <span class="stat-desc">Runs fully local</span>
+            </div>
+        </section>
+
+        <!-- HOW IT WORKS -->
+        <section class="how-it-works" id="how-it-works">
+            <h2 class="section-title">How To Use KeyClean</h2>
+            <p class="section-sub">Three simple steps to cleaner audio on every call.</p>
+
+            <div class="steps-grid">
+                <div class="step-card glass-card">
+                    <div class="step-num">01</div>
+                    <div class="step-icon">⚙️</div>
+                    <h3>Configure DSP Parameters</h3>
+                    <p>Head to the <strong>Dashboard</strong> and adjust the Detection Threshold slider. Higher values are stricter (fewer false positives). Lower values catch even quiet keystrokes. Start at the default <strong>12.0</strong>.</p>
+                </div>
+                <div class="step-card glass-card">
+                    <div class="step-num">02</div>
+                    <div class="step-icon">🧪</div>
+                    <h3>Run the Synthetic Sandbox</h3>
+                    <p>Click <strong>Run Synthetic Benchmark</strong> to test the DSP engine on generated speech with 40 injected clicks. See live Precision / Recall metrics and the DSP Analysis Timeline chart.</p>
+                </div>
+                <div class="step-card glass-card">
+                    <div class="step-num">03</div>
+                    <div class="step-icon">🎤</div>
+                    <h3>Clean Your Real Recording</h3>
+                    <p>Switch to the <strong>Clean Real WAV</strong> tab. Drag & drop or browse for your <code>.wav</code> recording. Hit <strong>Remove Keystrokes</strong> and download the cleaned output to use on your next video or call.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TECH CARDS -->
+        <section class="tech-section">
+            <h2 class="section-title">The DSP Under the Hood</h2>
+            <div class="tech-grid">
+                <div class="tech-card glass-card">
+                    <span class="tech-icon">📊</span>
+                    <h4>Spectral Flux</h4>
+                    <p>Measures how fast the frequency spectrum jumps frame-to-frame — clicks cause sudden broadband energy spikes unlike any speech sound.</p>
+                </div>
+                <div class="tech-card glass-card">
+                    <span class="tech-icon">📈</span>
+                    <h4>HF Energy Ratio</h4>
+                    <p>Computes the ratio of high-frequency (3kHz+) energy versus total energy. Keystroke transients have far more HF content than voiced speech.</p>
+                </div>
+                <div class="tech-card glass-card">
+                    <span class="tech-icon">🎯</span>
+                    <h4>Rolling MAD Z-score</h4>
+                    <p>Uses a robust Median Absolute Deviation baseline — adapts to changing mic gain and room noise without being skewed by the clicks themselves.</p>
+                </div>
+                <div class="tech-card glass-card">
+                    <span class="tech-icon">🎨</span>
+                    <h4>Crossfade Inpainting</h4>
+                    <p>Fills detected gaps by time-reversing adjacent audio and blending it in with a raised-cosine crossfade — smooth continuity, no glitch artifacts.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer class="page-footer">
+            <p>© 2026 KeyClean by <strong>Hari Priya</strong> · Pure Python DSP, numpy, scipy, FastAPI · No external APIs</p>
+        </footer>
+    </div>
+
+    <!-- ================================================
+         PAGE: DASHBOARD
+    ================================================ -->
+    <div class="page hidden" id="page-dashboard">
+
+        <!-- BIG HERO HEADLINE -->
+        <div class="dashboard-hero">
+            <h1 class="bubbly-title dashboard-title">KEYCLEAN</h1>
+            <p class="dashboard-tagline">Interactive Keystroke Noise Removal Dashboard</p>
+        </div>
+
+        <!-- INTERACTIVE KEYBOARD MUTE VISUAL -->
+        <div class="keyboard-section">
+            <div class="keyboard-status-bar">
+                <div class="ks-left">
+                    <span id="kb-mute-badge" class="mute-badge-large">🔇 KEYBOARD MUTED</span>
+                </div>
+                <div class="ks-right">
+                    <span class="ks-desc">Click keys below — noise is silently eliminated by the DSP engine.</span>
+                </div>
+            </div>
+
+            <!-- FULL INTERACTIVE KEYBOARD -->
+            <div class="full-keyboard" id="full-keyboard">
+                <!-- Row 1: number row -->
+                <div class="kb-row">
+                    <div class="key key-wide" data-key="`">~`</div>
+                    <div class="key" data-key="1">1</div><div class="key" data-key="2">2</div>
+                    <div class="key" data-key="3">3</div><div class="key" data-key="4">4</div>
+                    <div class="key" data-key="5">5</div><div class="key" data-key="6">6</div>
+                    <div class="key" data-key="7">7</div><div class="key" data-key="8">8</div>
+                    <div class="key" data-key="9">9</div><div class="key" data-key="0">0</div>
+                    <div class="key" data-key="-">-</div><div class="key" data-key="=">=</div>
+                    <div class="key key-wide2">⌫ DEL</div>
+                </div>
+                <!-- Row 2: QWERTY -->
+                <div class="kb-row">
+                    <div class="key key-wide">TAB</div>
+                    <div class="key" data-key="q">Q</div><div class="key" data-key="w">W</div>
+                    <div class="key" data-key="e">E</div><div class="key" data-key="r">R</div>
+                    <div class="key" data-key="t">T</div><div class="key" data-key="y">Y</div>
+                    <div class="key" data-key="u">U</div><div class="key" data-key="i">I</div>
+                    <div class="key" data-key="o">O</div><div class="key" data-key="p">P</div>
+                    <div class="key" data-key="[">[</div><div class="key" data-key="]">]</div>
+                    <div class="key key-wide2">\</div>
+                </div>
+                <!-- Row 3: ASDF -->
+                <div class="kb-row">
+                    <div class="key key-wide3">CAPS</div>
+                    <div class="key" data-key="a">A</div><div class="key" data-key="s">S</div>
+                    <div class="key" data-key="d">D</div><div class="key" data-key="f">F</div>
+                    <div class="key" data-key="g">G</div><div class="key" data-key="h">H</div>
+                    <div class="key" data-key="j">J</div><div class="key" data-key="k">K</div>
+                    <div class="key" data-key="l">L</div>
+                    <div class="key" data-key=";">;</div><div class="key" data-key="'">'</div>
+                    <div class="key key-wide3">ENTER</div>
+                </div>
+                <!-- Row 4: ZXCV -->
+                <div class="kb-row">
+                    <div class="key key-wide4">SHIFT</div>
+                    <div class="key" data-key="z">Z</div><div class="key" data-key="x">X</div>
+                    <div class="key" data-key="c">C</div><div class="key" data-key="v">V</div>
+                    <div class="key" data-key="b">B</div><div class="key" data-key="n">N</div>
+                    <div class="key" data-key="m">M</div>
+                    <div class="key" data-key=",">,</div><div class="key" data-key=".">.</div>
+                    <div class="key" data-key="/">/</div>
+                    <div class="key key-wide4">SHIFT</div>
+                </div>
+                <!-- Row 5: spacebar -->
+                <div class="kb-row">
+                    <div class="key key-mod">CTRL</div>
+                    <div class="key key-mod">ALT</div>
+                    <div class="key key-space" data-key=" ">SPACEBAR</div>
+                    <div class="key key-mod">ALT</div>
+                    <div class="key key-mod">CTRL</div>
+                </div>
+            </div>
+            <!-- Pulse / click feedback overlay text -->
+            <div class="key-feedback" id="key-feedback"></div>
+        </div>
+
+        <!-- DASHBOARD CONTENT (the original panel layout) -->
+        <div class="dashboard-grid">
+            <!-- LEFT: DSP CONTROLS -->
+            <section class="control-panel glass-card">
+                <h2 class="panel-title">DSP Configuration</h2>
+                <div class="control-group">
+                    <div class="slider-header">
+                        <label for="threshold">Detection Threshold (Z-score)</label>
+                        <span class="slider-val" id="val-threshold">12.0</span>
+                    </div>
+                    <input type="range" id="threshold" min="3.0" max="30.0" step="0.5" value="12.0">
+                    <p class="slider-desc">Higher = fewer false positives; Lower = catches quieter clicks.</p>
+                </div>
+                <div class="control-group">
+                    <div class="slider-header">
+                        <label for="pre-pad">Pre-onset Padding</label>
+                        <span class="slider-val" id="val-pre-pad">5 ms</span>
+                    </div>
+                    <input type="range" id="pre-pad" min="1" max="25" step="1" value="5">
+                    <p class="slider-desc">Padding before click onset to catch early transients.</p>
+                </div>
+                <div class="control-group">
+                    <div class="slider-header">
+                        <label for="post-pad">Post-onset Padding</label>
+                        <span class="slider-val" id="val-post-pad">15 ms</span>
+                    </div>
+                    <input type="range" id="post-pad" min="5" max="50" step="1" value="15">
+                    <p class="slider-desc">Padding after click to cover decay tail.</p>
+                </div>
+                <div class="control-group">
+                    <div class="slider-header">
+                        <label for="rolling-window">Rolling Window Frames</label>
+                        <span class="slider-val" id="val-rolling-window">150</span>
+                    </div>
+                    <input type="range" id="rolling-window" min="50" max="500" step="10" value="150">
+                    <p class="slider-desc">LargerHistogram baseline adapts slower.</p>
+                </div>
+                <div class="actions">
+                    <button id="btn-reset" class="btn-secondary">↺ Reset Defaults</button>
+                </div>
+            </section>
+
+            <!-- RIGHT: WORKSPACES -->
+            <section class="workspace-area">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="tab-synth">🧪 Synthetic Sandbox</button>
+                    <button class="tab-btn" data-tab="tab-real">🎤 Clean Real WAV</button>
+                </div>
+                <div class="tab-content">
+                    <!-- TAB: SYNTHETIC -->
+                    <div class="tab-pane active" id="tab-synth">
+                        <div class="glass-card instruction-card">
+                            <h3>Synthetic Benchmark Sandbox</h3>
+                            <p>Generate a 6s signal with 40 injected keystrokes (32 loud, 8 quiet) to measure live DSP accuracy.</p>
+                            <button id="btn-run-synth" class="btn-primary">
+                                <span>✨</span> Run Synthetic Benchmark
+                            </button>
+                        </div>
+                        <div class="metrics-grid" id="synth-metrics-row" style="display: none;">
+                            <div class="metric-card glass-card">
+                                <span class="metric-label">Precision</span>
+                                <span class="metric-val" id="m-precision">-</span>
+                                <span class="metric-help">1.00 = Zero voice muffling</span>
+                            </div>
+                            <div class="metric-card glass-card">
+                                <span class="metric-label">Recall</span>
+                                <span class="metric-val" id="m-recall">-</span>
+                                <span class="metric-help">0.80 = Baseline target</span>
+                            </div>
+                            <div class="metric-card glass-card">
+                                <span class="metric-label">F1-Score</span>
+                                <span class="metric-val" id="m-f1">-</span>
+                                <span class="metric-help">Harmonic average</span>
+                            </div>
+                            <div class="metric-card glass-card">
+                                <span class="metric-label">Detections</span>
+                                <span class="metric-valSub" id="m-hits">-</span>
+                                <span class="metric-help" id="m-detail">-</span>
+                            </div>
+                        </div>
+                        <div class="audio-comparison" id="synth-audio-players" style="display: none;">
+                            <h3 class="widget-subtitle">Audio Comparisons</h3>
+                            <div class="audio-row">
+                                <div class="audio-item">
+                                    <span class="audio-label">1. Noisy Input</span>
+                                    <audio id="audio-synth-noisy" controls></audio>
+                                </div>
+                                <div class="audio-item">
+                                    <span class="audio-label">2. Cleaned Output</span>
+                                    <audio id="audio-synth-cleaned" controls></audio>
+                                </div>
+                                <div class="audio-item">
+                                    <span class="audio-label">3. Voice Reference</span>
+                                    <audio id="audio-synth-ref" controls></audio>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- TAB: REAL FILE -->
+                    <div class="tab-pane" id="tab-real">
+                        <div class="glass-card instruction-card">
+                            <h3>Keystroke Remover — Real Recording</h3>
+                            <p>Upload a <code>.wav</code> recording with keyboard noise. The DSP engine will detect and inpaint all click gaps.</p>
+                            <div class="drop-zone" id="drop-zone">
+                                <span class="drop-icon">📤</span>
+                                <span class="drop-text">Drag & Drop WAV file or <span class="browse-link">browse</span></span>
+                                <input type="file" id="file-input" accept=".wav" style="display: none;">
+                            </div>
+                            <div class="upload-actions" id="upload-actions" style="display: none;">
+                                <div class="selected-file-info">
+                                    <span class="file-name" id="selected-file-name">file.wav</span>
+                                    <span class="file-size" id="selected-file-size">0 KB</span>
+                                </div>
+                                <button id="btn-run-clean" class="btn-primary">🧹 Remove Keystrokes</button>
+                            </div>
+                        </div>
+                        <div class="audio-comparison" id="real-audio-players" style="display: none;">
+                            <h3 class="widget-subtitle">Audio Comparisons</h3>
+                            <div class="audio-row">
+                                <div class="audio-item">
+                                    <span class="audio-label">Original Noisy Audio</span>
+                                    <audio id="audio-real-noisy" controls></audio>
+                                </div>
+                                <div class="audio-item flex-audio">
+                                    <div>
+                                        <span class="audio-label">Cleaned Output</span>
+                                        <audio id="audio-real-cleaned" controls></audio>
+                                    </div>
+                                    <a id="btn-download-cleaned" class="btn-secondary btn-download" download="cleaned_audio.wav">💾 Download</a>
+                                </div>
+                            </div>
+                            <div class="real-results-summary">
+                                <span class="info-badge">Done</span> Detected and inpainted <strong id="real-click-count">0</strong> clicks in this recording.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- CHART -->
+                <div class="glass-card chart-container" id="visualization-card" style="display: none;">
+                    <h3 class="widget-subtitle">DSP Analysis Timeline</h3>
+                    <p class="chart-desc">Z-score trace showing where clicks were detected and inpainted.</p>
+                    <div class="canvas-wrapper">
+                        <canvas id="dsp-canvas"></canvas>
+                        <div id="chart-tooltip" class="chart-tooltip"></div>
+                    </div>
+                    <div class="chart-legend">
+                        <div class="legend-item"><span class="legend-dot z-dot"></span>Z-score</div>
+                        <div class="legend-item"><span class="legend-dot thresh-dot"></span>Threshold</div>
+                        <div class="legend-item"><span class="legend-dot click-dot"></span>Inpainted Region</div>
+                        <div class="legend-item" id="legend-gt"><span class="legend-dot gt-dot"></span>Ground Truth</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="page-footer">
+            <p>© 2026 KeyClean by <strong>Hari Priya</strong> · Pure Python DSP, numpy, scipy, FastAPI</p>
+        </footer>
+    </div>
+
+    <!-- ================================================
+         PAGE: ABOUT
+    ================================================ -->
+    <div class="page hidden" id="page-about">
+        <section class="about-section">
+            <div class="about-hero">
+                <div class="about-avatar">
+                    <span class="avatar-emoji">👩‍💻</span>
+                </div>
+                <div class="about-badge-row">
+                    <span class="tag-badge">AI Enthusiast</span>
+                    <span class="tag-badge">CS Student</span>
+                    <span class="tag-badge">Builder</span>
+                </div>
+                <h1 class="about-name">Hari Priya</h1>
+                <p class="about-subtitle">19-year-old Computer Science Student</p>
+            </div>
+
+            <div class="about-content">
+                <div class="about-card glass-card">
+                    <h2>About Me</h2>
+                    <p>Hi, I'm <strong>Hari Priya</strong>, a 19-year-old Computer Science student interested in AI and practical problem-solving. I enjoy exploring how technology can be used to solve real-world problems and building projects with a purpose.</p>
+                    <p>I built <strong>KeyClean</strong>, a project that reduces keyboard and typing noise from audio and video while preserving the main audio. I'm currently exploring AI and learning new technologies by building and experimenting with practical projects.</p>
+                </div>
+
+                <div class="about-grid">
+                    <div class="about-info-card glass-card">
+                        <span class="about-info-icon">🎓</span>
+                        <h4>Education</h4>
+                        <p>B.Tech Computer Science</p>
+                    </div>
+                    <div class="about-info-card glass-card">
+                        <span class="about-info-icon">🤖</span>
+                        <h4>Focus Area</h4>
+                        <p>Artificial Intelligence &amp; DSP</p>
+                    </div>
+                    <div class="about-info-card glass-card">
+                        <span class="about-info-icon">🛠️</span>
+                        <h4>Approach</h4>
+                        <p>Build &amp; experiment with purpose</p>
+                    </div>
+                </div>
+
+                <div class="project-highlight glass-card">
+                    <div class="ph-left">
+                        <span class="ph-icon">🎹</span>
+                        <div>
+                            <h3>KeyClean</h3>
+                            <p class="ph-desc">A real-time DSP system that removes keystroke noise from audio/video recordings while preserving voice quality — built from scratch using Python, NumPy, and SciPy.</p>
+                            <div class="ph-tags">
+                                <span class="ph-tag">Python</span>
+                                <span class="ph-tag">NumPy</span>
+                                <span class="ph-tag">SciPy</span>
+                                <span class="ph-tag">FastAPI</span>
+                                <span class="ph-tag">DSP</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="navigate('dashboard')">Open Dashboard →</button>
+                </div>
+            </div>
+        </section>
+
+        <footer class="page-footer">
+            <p>© 2026 KeyClean by <strong>Hari Priya</strong></p>
+        </footer>
+    </div>
+
+    <!-- LOADING SPINNER -->
+    <div class="loading-overlay hidden" id="loading-overlay">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <div class="loading-text">Cleaning Audio Tracks...</div>
+            <div class="pulse-text">Inpainting Waveform Continua</div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
