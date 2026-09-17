@@ -31,6 +31,8 @@ async def get_index():
 @app.post("/api/synth")
 async def run_synth(
     threshold: float = Form(12.0),
+    low_threshold: float = Form(2.5),
+    mode: str = Form("standard"),
     pre_pad_sec: float = Form(0.005),
     post_pad_sec: float = Form(0.015),
     rolling_window: int = Form(150)
@@ -51,6 +53,8 @@ async def run_synth(
         gaps, info = detect_keystrokes(
             noisy, sr, 
             threshold=threshold, 
+            low_threshold=low_threshold,
+            mode=mode,
             rolling_window=rolling_window, 
             pre_pad_sec=pre_pad_sec, 
             post_pad_sec=post_pad_sec
@@ -95,6 +99,8 @@ async def run_synth(
 async def clean_audio(
     file: UploadFile = File(...),
     threshold: float = Form(12.0),
+    low_threshold: float = Form(2.5),
+    mode: str = Form("standard"),
     pre_pad_sec: float = Form(0.005),
     post_pad_sec: float = Form(0.015),
     rolling_window: int = Form(150)
@@ -117,6 +123,8 @@ async def clean_audio(
         gaps, info = detect_keystrokes(
             y, sr, 
             threshold=threshold, 
+            low_threshold=low_threshold,
+            mode=mode,
             rolling_window=rolling_window, 
             pre_pad_sec=pre_pad_sec, 
             post_pad_sec=post_pad_sec
