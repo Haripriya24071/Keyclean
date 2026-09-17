@@ -246,10 +246,18 @@ async def clean_audio(
         save_wav(cleaned_path, cleaned, sr)
         
         detected_gaps_sec = [{"start": float(start / sr), "end": float(end / sr)} for start, end in gaps]
+        total_inpainted_sec = float(sum((end - start) for start, end in gaps) / sr) if sr > 0 else 0.0
         
         return JSONResponse(content={
             "detected_gaps": detected_gaps_sec,
             "count": len(gaps),
+            "audio_info": {
+                "duration_sec": round(float(len(y) / sr), 3) if sr > 0 else 0.0,
+                "sample_rate": sr,
+                "total_samples": len(y),
+                "gaps_detected": len(gaps),
+                "cleaned_duration_sec": round(total_inpainted_sec, 3)
+            },
             "plot_data": {
                 "times": info["frames_t"],
                 "z_scores": info["z_scores"],
