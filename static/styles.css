@@ -533,6 +533,22 @@ input[type="range"]::-webkit-slider-thumb {
 }
 input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); box-shadow: 0 0 16px var(--cyan); }
 .slider-desc { font-size: 0.78rem; color: var(--muted); }
+.select-input {
+    width: 100%;
+    background: rgba(13, 27, 42, 0.8);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+.select-input:focus {
+    border-color: var(--cyan);
+}
 
 /* Buttons */
 .btn-primary {
