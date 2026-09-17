@@ -2,7 +2,7 @@ import os
 import numpy as np
 import scipy.io.wavfile as wav
 
-def generate_synthetic_data(sr=16000, duration=6.0, num_clicks=40):
+def generate_synthetic_data(sr=16000, duration=6.0, num_clicks=40, seed=None):
     """
     Generates synthetic speech-like audio and injects click noises (keystrokes)
     at known timestamps for benchmark evaluation.
@@ -15,6 +15,8 @@ def generate_synthetic_data(sr=16000, duration=6.0, num_clicks=40):
         Audio duration in seconds.
     num_clicks : int
         Number of click transients to inject.
+    seed : int, optional
+        Random seed for reproducible synthetic data generation.
         
     Returns:
     -------
@@ -25,6 +27,9 @@ def generate_synthetic_data(sr=16000, duration=6.0, num_clicks=40):
     click_times : np.ndarray
         Ground-truth click timestamps (in seconds).
     """
+    if seed is not None:
+        np.random.seed(seed)
+        
     n_samples = int(duration * sr)
     t = np.arange(n_samples) / sr
     
