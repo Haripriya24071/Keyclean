@@ -32,14 +32,14 @@ def inpaint_gaps(y, gaps):
         L = end - start
         
         # 1. Left Context Segment (Size L)
-        # If start is less than L, we take what is available and pad it using reflection
+        # If start is less than L, we take what is available and pad it
         left_start = start - L
         if left_start < 0:
             left_segment = y_clean[0:start]
             left_reverse = np.flip(left_segment)
             if len(left_reverse) > 0:
                 pad_len = L - len(left_reverse)
-                left_reverse = np.pad(left_reverse, (0, pad_len), mode='reflect')
+                left_reverse = np.pad(left_reverse, (0, pad_len), mode='edge')
             else:
                 left_reverse = np.zeros(L)
         else:
@@ -53,7 +53,7 @@ def inpaint_gaps(y, gaps):
             right_reverse = np.flip(right_segment)
             if len(right_reverse) > 0:
                 pad_len = L - len(right_reverse)
-                right_reverse = np.pad(right_reverse, (pad_len, 0), mode='reflect')
+                right_reverse = np.pad(right_reverse, (pad_len, 0), mode='edge')
             else:
                 right_reverse = np.zeros(L)
         else:
