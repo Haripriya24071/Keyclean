@@ -227,8 +227,49 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDebounceTimer = setTimeout(runClientSideReDetection, 100);
     }
 
+    // ── DSP Presets ──
+    const PRESETS = {
+        balanced: { threshold: 12.0, pre_pad: 5, post_pad: 15, rolling_window: 150, name: 'Balanced' },
+        aggressive: { threshold: 7.0, pre_pad: 8, post_pad: 25, rolling_window: 100, name: 'Aggressive' },
+        conservative: { threshold: 18.0, pre_pad: 3, post_pad: 10, rolling_window: 200, name: 'Conservative' },
+        mech: { threshold: 9.0, pre_pad: 6, post_pad: 30, rolling_window: 120, name: 'Mech Keyboard' }
+    };
+
+    const presetButtons = document.querySelectorAll('.preset-btn');
+    const presetActiveTag = document.getElementById('preset-active-tag');
+
+    function setActivePresetTag(name) {
+        if (presetActiveTag) presetActiveTag.textContent = `Profile: ${name}`;
+    }
+
+    function clearPresetSelection() {
+        presetButtons.forEach(btn => btn.classList.remove('active'));
+        setActivePresetTag('Custom');
+    }
+
+    presetButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const key = btn.getAttribute('data-preset');
+            const p = PRESETS[key];
+            if (!p) return;
+
+            presetButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            setActivePresetTag(p.name);
+
+            if (thresholdInput) thresholdInput.value = p.threshold;
+            if (prePadInput) prePadInput.value = p.pre_pad;
+            if (postPadInput) postPadInput.value = p.post_pad;
+            if (rollingWindowInput) rollingWindowInput.value = p.rolling_window;
+
+            updateSliderLabels();
+            scheduleDebouncedUpdate();
+        });
+    });
+
     modeInput?.addEventListener('change', () => {
         toggleModeControls();
+        clearPresetSelection();
         scheduleDebouncedUpdate();
     });
     toggleModeControls();
@@ -237,18 +278,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (s) {
             s.addEventListener('input', () => {
                 updateSliderLabels();
+                clearPresetSelection();
                 scheduleDebouncedUpdate();
             });
         }
     });
 
     document.getElementById('btn-reset')?.addEventListener('click', () => {
+        const p = PRESETS.balanced;
         if (modeInput) modeInput.value = 'standard';
-        if (thresholdInput) thresholdInput.value = 12.0;
+        if (thresholdInput) thresholdInput.value = p.threshold;
         if (lowThresholdInput) lowThresholdInput.value = 2.5;
-        if (prePadInput) prePadInput.value = 5;
-        if (postPadInput) postPadInput.value = 15;
-        if (rollingWindowInput) rollingWindowInput.value = 150;
+        if (prePadInput) prePadInput.value = p.pre_pad;
+        if (postPadInput) postPadInput.value = p.post_pad;
+        if (rollingWindowInput) rollingWindowInput.value = p.rolling_window;
+        
+        presetButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-preset') === 'balanced'));
+        setActivePresetTag('Balanced');
         toggleModeControls();
         updateSliderLabels();
         scheduleDebouncedUpdate();
