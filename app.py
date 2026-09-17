@@ -96,6 +96,22 @@ async def get_index():
     with open(index_path, "r", encoding="utf-8") as f:
         return f.read()
 
+MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024  # 50 MB limit
+
+def validate_dsp_params(threshold: float, low_threshold: float, rolling_window: int, pre_pad_sec: float, post_pad_sec: float, mode: str):
+    if threshold <= 0:
+        raise HTTPException(status_code=400, detail="Threshold Z-score must be greater than 0.")
+    if low_threshold < 0:
+        raise HTTPException(status_code=400, detail="Low threshold Z-score must be non-negative.")
+    if rolling_window < 10 or rolling_window > 2000:
+        raise HTTPException(status_code=400, detail="Rolling window frames must be between 10 and 2000.")
+    if pre_pad_sec < 0 or pre_pad_sec > 0.5:
+        raise HTTPException(status_code=400, detail="Pre-onset padding must be between 0 and 0.5 seconds.")
+    if post_pad_sec < 0 or post_pad_sec > 0.5:
+        raise HTTPException(status_code=400, detail="Post-onset padding must be between 0 and 0.5 seconds.")
+    if mode not in ("standard", "hysteresis"):
+        raise HTTPException(status_code=400, detail="Detection mode must be 'standard' or 'hysteresis'.")
+
 @app.post("/api/synth")
 async def run_synth(
     threshold: float = Form(12.0),
@@ -105,6 +121,7 @@ async def run_synth(
     post_pad_sec: float = Form(0.015),
     rolling_window: int = Form(150)
 ):
+    validate_dsp_params(threshold, low_threshold, rolling_window, pre_pad_sec, post_pad_sec, mode)
     try:
         sr = 16000
         duration = 6.0
@@ -161,6 +178,8 @@ async def run_synth(
                 "reference": "/data/voice_only_reference.wav?t=" + str(np.random.randint(100000))
             }
         })
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -174,6 +193,7 @@ async def clean_audio(
     post_pad_sec: float = Form(0.015),
     rolling_window: int = Form(150)
 ):
+    validate_dsp_params(threshold, low_threshold, rolling_window, pre_pad_sec, post_pad_sec, mode)
     ext = os.path.splitext(file.filename)[1].lower() if file.filename else ".wav"
     if not ext:
         ext = ".wav"
@@ -184,6 +204,13 @@ async def clean_audio(
             detail=f"Unsupported file format '{ext}'. Supported formats: .wav, .mp3, .m4a, .flac, .ogg"
         )
         
+    # Check upload file size limit
+    file.file.seek(0, 2)
+    file_size = file.file.tell()
+    file.file.seek(0)
+    if file_size > MAX_FILE_SIZE_BYTES:
+        raise HTTPException(status_code=400, detail="File size exceeds maximum limit of 50 MB.")
+
     upload_path = f"data/noisy_upload{ext}"
     with open(upload_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
