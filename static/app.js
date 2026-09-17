@@ -336,13 +336,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleFiles(files) {
         if (!files?.length) return;
         const file = files[0];
-        if (!file.name.endsWith('.wav')) { alert('Please select a .wav file.'); return; }
+        if (!file.name.endsWith('.wav')) {
+            showToast("Only .wav files are supported. Try converting your audio first.", "error");
+            return;
+        }
         selectedFile = file;
         if (selectedFileName) selectedFileName.textContent = file.name;
         if (selectedFileSize) selectedFileSize.textContent = (file.size / 1024).toFixed(1) + ' KB';
         if (uploadActions) uploadActions.style.display = 'flex';
         const realPlayers = document.getElementById('real-audio-players');
         if (realPlayers) realPlayers.style.display = 'none';
+        showToast(`Loaded ${file.name}`, 'info', 2000);
     }
 
     // ── Canvas Chart
@@ -556,9 +560,96 @@ document.addEventListener('DOMContentLoaded', () => {
         return fd;
     }
 
+    // ── TOAST NOTIFICATION SYSTEM ──
+    function showToast(message, type = 'info', duration = 4000) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        // Max 3 toasts visible at once
+        while (container.children.length >= 3) {
+            container.firstElementChild.remove();
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+
+        const icons = {
+            success: '✓',
+            error: '⚠️',
+            info: 'ℹ️'
+        };
+
+        toast.innerHTML = `
+            <div class="toast-content">
+                <span class="toast-icon">${icons[type] || 'ℹ️'}</span>
+                <span class="toast-msg">${message}</span>
+            </div>
+            <button class="toast-close-btn" aria-label="Close">&times;</button>
+        `;
+
+        const closeBtn = toast.querySelector('.toast-close-btn');
+        closeBtn?.addEventListener('click', () => {
+            toast.classList.add('toast-out');
+            setTimeout(() => toast.remove(), 250);
+        });
+
+        container.appendChild(toast);
+
+        if (duration > 0) {
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.classList.add('toast-out');
+                    setTimeout(() => toast.remove(), 250);
+                }
+            }, duration);
+        }
+    }
+
+    // ── FRIENDLY ERROR MAPPER ──
+    function handleFriendlyError(err) {
+        const msg = err?.message || String(err);
+        if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('Load failed')) {
+            showToast("Can't reach the server. Is the FastAPI backend running?", 'error');
+        } else if (msg.includes('500') || msg.includes('Internal Server Error') || msg.includes('processing this file')) {
+            showToast("Something went wrong processing this file. Try a shorter clip.", 'error');
+        } else if (msg.includes('.wav') || msg.includes('standard WAV')) {
+            showToast("Only .wav files are supported. Try converting your audio first.", 'error');
+        } else {
+            showToast(msg, 'error');
+        }
+    }
+
+    // ── SEQUENTIAL LOADING OVERLAY STAGES ──
+    let loadingStageTimer = null;
+    const LOADING_STAGES = [
+        "Analyzing audio frames...",
+        "Computing spectral flux...",
+        "Detecting keystroke regions...",
+        "Inpainting gaps..."
+    ];
+
     function showLoading(show) {
         const overlay = document.getElementById('loading-overlay');
-        if (overlay) overlay.classList.toggle('hidden', !show);
+        const stageText = document.getElementById('loading-stage-text');
+        
+        if (loadingStageTimer) {
+            clearInterval(loadingStageTimer);
+            loadingStageTimer = null;
+        }
+
+        if (overlay) {
+            overlay.classList.toggle('hidden', !show);
+        }
+
+        if (show) {
+            let stageIndex = 0;
+            if (stageText) stageText.textContent = LOADING_STAGES[0];
+
+            loadingStageTimer = setInterval(() => {
+                stageIndex = (stageIndex + 1) % LOADING_STAGES.length;
+                if (stageText) stageText.textContent = LOADING_STAGES[stageIndex];
+            }, 600);
+        }
     }
 
     // ── SYNTH BENCHMARK
@@ -566,7 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showLoading(true);
         try {
             const res = await fetch('/api/synth', { method: 'POST', body: getDSPFormData() });
-            if (!res.ok) throw new Error('Synth request failed');
+            if (!res.ok) throw new Error('Something went wrong processing this file. Try a shorter clip.');
             const data = await res.json();
 
             document.getElementById('m-precision').textContent = data.metrics.precision.toFixed(2);
@@ -591,9 +682,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const vizCard = document.getElementById('visualization-card');
             if (vizCard) vizCard.style.display = 'block';
 
+            showToast("Synthetic benchmark completed!", "success", 3000);
             setTimeout(() => { resizeCanvas(); drawChart(); }, 60);
         } catch (err) {
-            alert('DSP Error: ' + err.message);
+            handleFriendlyError(err);
         } finally {
             showLoading(false);
         }
@@ -607,7 +699,7 @@ document.addEventListener('DOMContentLoaded', () => {
         fd.append('file', selectedFile);
         try {
             const res = await fetch('/api/clean', { method: 'POST', body: fd });
-            if (!res.ok) { const e = await res.json(); throw new Error(e.detail || 'Failed'); }
+            if (!res.ok) { throw new Error('Something went wrong processing this file. Try a shorter clip.'); }
             const data = await res.json();
 
             document.getElementById('audio-real-noisy').src = data.audio_urls.noisy;
@@ -626,9 +718,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const vizCard = document.getElementById('visualization-card');
             if (vizCard) vizCard.style.display = 'block';
 
+            showToast(`Successfully cleaned ${data.count} click transients!`, "success", 3500);
             setTimeout(() => { resizeCanvas(); drawChart(); }, 60);
         } catch (err) {
-            alert('Error: ' + err.message);
+            handleFriendlyError(err);
         } finally {
             showLoading(false);
         }
@@ -679,6 +772,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (micErrorBanner) micErrorBanner.style.display = 'none';
         
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            showToast("Your browser does not support microphone recording.", "error");
             if (micErrorBanner) {
                 micErrorBanner.innerHTML = '⚠️ Your browser does not support microphone recording (navigator.mediaDevices.getUserMedia not available).';
                 micErrorBanner.style.display = 'block';
@@ -690,13 +784,14 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         } catch (err) {
+            let msg = '⚠️ Microphone access was denied or unavailable. Please check your browser permissions.';
+            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                msg = '🔒 Microphone permission denied. Please allow microphone access in your browser settings to record audio.';
+            } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                msg = '🎙️ No microphone device found on your system. Please connect a microphone and try again.';
+            }
+            showToast(msg, 'error');
             if (micErrorBanner) {
-                let msg = '⚠️ Microphone access was denied or unavailable. Please check your browser permissions.';
-                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                    msg = '🔒 Microphone permission denied. Please allow microphone access in your browser settings to record audio.';
-                } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-                    msg = '🎙️ No microphone device found on your system. Please connect a microphone and try again.';
-                }
                 micErrorBanner.innerHTML = msg;
                 micErrorBanner.style.display = 'block';
             }
@@ -822,7 +917,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
 
-                if (!res.ok) { const e = await res.json(); throw new Error(e.detail || 'Failed'); }
+                if (!res.ok) { throw new Error('Something went wrong processing this file. Try a shorter clip.'); }
                 const data = await res.json();
 
                 document.getElementById('audio-real-noisy').src = data.audio_urls.noisy;
@@ -841,9 +936,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const vizCard = document.getElementById('visualization-card');
                 if (vizCard) vizCard.style.display = 'block';
 
+                showToast(`Live recording cleaned! Removed ${data.count} clicks.`, "success", 3500);
                 setTimeout(() => { resizeCanvas(); drawChart(); }, 60);
             } catch (err) {
-                alert('Record & Clean Error: ' + err.message);
+                handleFriendlyError(err);
             } finally {
                 showLoading(false);
             }
