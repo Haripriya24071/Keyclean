@@ -151,6 +151,59 @@ async def clean_audio(
                 "cleaned": "/data/cleaned_upload.wav?t=" + str(np.random.randint(100000))
             }
         })
+from pydantic import BaseModel
+from typing import List, Optional
+
+class PCMRecordRequest(BaseModel):
+    pcm: List[float]
+    sr: Optional[int] = 16000
+    threshold: Optional[float] = 12.0
+    low_threshold: Optional[float] = 2.5
+    mode: Optional[str] = "standard"
+    pre_pad_sec: Optional[float] = 0.005
+    post_pad_sec: Optional[float] = 0.015
+    rolling_window: Optional[int] = 150
+
+@app.post("/api/record")
+async def record_audio(req: PCMRecordRequest):
+    try:
+        y = np.array(req.pcm, dtype=np.float32)
+        sr = req.sr or 16000
+        
+        # Save raw recording
+        save_wav("data/recorded_noisy.wav", y, sr)
+        
+        # Detect clicks
+        gaps, info = detect_keystrokes(
+            y, sr, 
+            threshold=req.threshold, 
+            low_threshold=req.low_threshold,
+            mode=req.mode,
+            rolling_window=req.rolling_window, 
+            pre_pad_sec=req.pre_pad_sec, 
+            post_pad_sec=req.post_pad_sec
+        )
+        
+        # Clean audio
+        cleaned = inpaint_gaps(y, gaps)
+        
+        # Save output
+        save_wav("data/recorded_cleaned.wav", cleaned, sr)
+        
+        detected_gaps_sec = [{"start": float(start / sr), "end": float(end / sr)} for start, end in gaps]
+        
+        return JSONResponse(content={
+            "detected_gaps": detected_gaps_sec,
+            "count": len(gaps),
+            "plot_data": {
+                "times": info["frames_t"],
+                "z_scores": info["z_scores"]
+            },
+            "audio_urls": {
+                "noisy": "/data/recorded_noisy.wav?t=" + str(np.random.randint(100000)),
+                "cleaned": "/data/recorded_cleaned.wav?t=" + str(np.random.randint(100000))
+            }
+        })
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
