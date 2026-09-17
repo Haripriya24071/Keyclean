@@ -398,7 +398,7 @@
                     <div class="tab-pane" id="tab-real">
                         <div class="glass-card instruction-card">
                             <h3>Keystroke Remover — Real Audio</h3>
-                            <p>Record live mic audio for 5 seconds or upload a <code>.wav</code> recording with keyboard click noise.</p>
+                            <p>Record live mic audio for 5 seconds or upload an audio recording (<code>.wav, .mp3, .m4a, .flac, .ogg</code>) with keyboard click noise.</p>
                             
                             <!-- Permission Error Banner -->
                             <div id="mic-error-banner" class="error-banner" style="display: none;"></div>
@@ -422,8 +422,8 @@
 
                             <div class="drop-zone" id="drop-zone">
                                 <span class="drop-icon">📤</span>
-                                <span class="drop-text">Drag &amp; Drop WAV file or <span class="browse-link">browse</span></span>
-                                <input type="file" id="file-input" accept=".wav" style="display: none;">
+                                <span class="drop-text">Drag &amp; Drop audio file (.wav, .mp3, .m4a, .flac, .ogg) or <span class="browse-link">browse</span></span>
+                                <input type="file" id="file-input" accept="audio/*,.wav,.mp3,.m4a,.flac,.ogg" style="display: none;">
                             </div>
                             <div class="upload-actions" id="upload-actions" style="display: none;">
                                 <div class="selected-file-info">
