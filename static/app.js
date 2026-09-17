@@ -116,11 +116,130 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    modeInput?.addEventListener('change', toggleModeControls);
+    // ── Real-time Client-side Re-detection & Re-evaluation (100ms Debounced) ──
+    let updateDebounceTimer = null;
+
+    function runClientSideReDetection() {
+        if (!currentPlotData || !currentPlotData.z_scores || !groundTruthTimes) return;
+
+        const threshold = parseFloat(thresholdInput?.value || 12);
+        const lowThreshold = parseFloat(lowThresholdInput?.value || 2.5);
+        const prePadSec = (parseFloat(prePadInput?.value || 5)) / 1000;
+        const postPadSec = (parseFloat(postPadInput?.value || 15)) / 1000;
+        const mode = modeInput?.value || 'standard';
+
+        const { z_scores, times } = currentPlotData;
+        const nFrames = z_scores.length;
+        const totalDuration = (times && times.length) ? times[times.length - 1] : 6.0;
+
+        const rawIntervals = [];
+
+        if (mode === 'hysteresis') {
+            for (let i = 0; i < nFrames; i++) {
+                if (z_scores[i] >= threshold) {
+                    let startFrame = i;
+                    while (startFrame > 0 && z_scores[startFrame] >= lowThreshold) {
+                        startFrame--;
+                    }
+                    let endFrame = i;
+                    while (endFrame < nFrames - 1 && z_scores[endFrame] >= lowThreshold) {
+                        endFrame++;
+                    }
+                    const startSec = Math.max(0, times[startFrame] - prePadSec);
+                    const endSec = Math.min(totalDuration, times[endFrame] + postPadSec);
+                    rawIntervals.push({ start: startSec, end: endSec });
+                }
+            }
+        } else {
+            for (let i = 0; i < nFrames; i++) {
+                if (z_scores[i] > threshold) {
+                    const startSec = Math.max(0, times[i] - prePadSec);
+                    const endSec = Math.min(totalDuration, times[i] + postPadSec);
+                    rawIntervals.push({ start: startSec, end: endSec });
+                }
+            }
+        }
+
+        // Merge overlapping intervals
+        const mergedGaps = [];
+        if (rawIntervals.length > 0) {
+            rawIntervals.sort((a, b) => a.start - b.start);
+            let curStart = rawIntervals[0].start;
+            let curEnd = rawIntervals[0].end;
+            for (let k = 1; k < rawIntervals.length; k++) {
+                if (rawIntervals[k].start <= curEnd) {
+                    curEnd = Math.max(curEnd, rawIntervals[k].end);
+                } else {
+                    mergedGaps.push({ start: curStart, end: curEnd });
+                    curStart = rawIntervals[k].start;
+                    curEnd = rawIntervals[k].end;
+                }
+            }
+            mergedGaps.push({ start: curStart, end: curEnd });
+        }
+
+        detectedGaps = mergedGaps;
+
+        // Re-evaluate against ground truth times (30ms tolerance matching backend)
+        const toleranceSec = 0.03;
+        let tp = 0;
+        let fn = 0;
+        const matchedGapIndices = new Set();
+
+        groundTruthTimes.forEach(gtSec => {
+            let matched = false;
+            for (let idx = 0; idx < mergedGaps.length; idx++) {
+                const g = mergedGaps[idx];
+                if ((g.start - toleranceSec) <= gtSec && gtSec <= (g.end + toleranceSec)) {
+                    matched = true;
+                    matchedGapIndices.add(idx);
+                    break;
+                }
+            }
+            if (matched) tp++;
+            else fn++;
+        });
+
+        const fp = mergedGaps.length - matchedGapIndices.size;
+        const precision = (tp + fp) > 0 ? (tp / (tp + fp)) : 0.0;
+        const recall = groundTruthTimes.length > 0 ? (tp / groundTruthTimes.length) : 0.0;
+        const f1 = (precision + recall) > 0 ? (2 * precision * recall / (precision + recall)) : 0.0;
+
+        // Update DOM metrics
+        const mPrec = document.getElementById('m-precision');
+        const mRec = document.getElementById('m-recall');
+        const mF1 = document.getElementById('m-f1');
+        const mHits = document.getElementById('m-hits');
+        const mDetail = document.getElementById('m-detail');
+
+        if (mPrec) mPrec.textContent = precision.toFixed(2);
+        if (mRec) mRec.textContent = recall.toFixed(2);
+        if (mF1) mF1.textContent = f1.toFixed(2);
+        if (mHits) mHits.textContent = `${tp} / ${groundTruthTimes.length}`;
+        if (mDetail) mDetail.textContent = `${fp} FP · ${fn} Missed`;
+
+        // Redraw chart with updated threshold lines & gaps
+        drawChart();
+    }
+
+    function scheduleDebouncedUpdate() {
+        clearTimeout(updateDebounceTimer);
+        updateDebounceTimer = setTimeout(runClientSideReDetection, 100);
+    }
+
+    modeInput?.addEventListener('change', () => {
+        toggleModeControls();
+        scheduleDebouncedUpdate();
+    });
     toggleModeControls();
 
     [thresholdInput, lowThresholdInput, prePadInput, postPadInput, rollingWindowInput].forEach(s => {
-        if (s) s.addEventListener('input', updateSliderLabels);
+        if (s) {
+            s.addEventListener('input', () => {
+                updateSliderLabels();
+                scheduleDebouncedUpdate();
+            });
+        }
     });
 
     document.getElementById('btn-reset')?.addEventListener('click', () => {
@@ -132,6 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (rollingWindowInput) rollingWindowInput.value = 150;
         toggleModeControls();
         updateSliderLabels();
+        scheduleDebouncedUpdate();
     });
 
     updateSliderLabels();
