@@ -120,30 +120,58 @@ KeyClean includes a synthetic test signal generator `/api/synth` that overlays c
 ## 📡 API Reference
 
 ### 1. `POST /api/clean`
-Uploads a WAV audio file, detects click transients, inpaints gaps, and returns cleaned audio alongside diagnostic telemetry.
+Uploads an audio file (`.wav`, `.mp3`, `.m4a`, `.flac`, `.ogg`), detects click transients, inpaints gaps, and returns cleaned WAV audio alongside telemetry metadata.
 
 - **Content-Type**: `multipart/form-data`
 - **Parameters**:
-  - `file` (File, required): WAV audio file.
+  - `file` (File, required): Audio file (`.wav`, `.mp3`, `.m4a`, `.flac`, `.ogg`, max 50MB).
   - `threshold` (float, optional, default: `12.0`): Z-score trigger threshold.
-  - `pre_pad` (float, optional, default: `5.0`): Pre-onset padding in milliseconds.
-  - `post_pad` (float, optional, default: `15.0`): Post-onset padding in milliseconds.
+  - `pre_pad_sec` (float, optional, default: `0.005`): Pre-onset padding in seconds.
+  - `post_pad_sec` (float, optional, default: `0.015`): Post-onset padding in seconds.
   - `rolling_window` (int, optional, default: `150`): MAD baseline window length in frames.
   - `mode` (string, optional, default: `"standard"`): Detection mode (`"standard"` or `"hysteresis"`).
-  - `low_threshold` (float, optional, default: `"4.0"`): Hysteresis low release threshold.
-- **Response**: JSON payload containing `cleaned_audio` (base64 encoded WAV), `detected_gaps`, `metrics`, and downsampled `plot_data` for canvas rendering.
+  - `low_threshold` (float, optional, default: `2.5`): Hysteresis low release threshold.
+- **Response**: JSON payload containing `count`, `audio_info` metadata (duration, sample rate, total samples, cleaned duration), `detected_gaps`, `plot_data`, and audio URLs.
 
 ### 2. `POST /api/record`
-Accepts raw audio blob uploads from the browser Web Audio recorder and returns cleaned output.
+Accepts raw PCM audio blob uploads from the browser Web Audio recorder and returns cleaned output.
 
-- **Content-Type**: `multipart/form-data`
+- **Content-Type**: `application/json`
 - **Parameters**: Same DSP tuning parameters as `/api/clean`.
 
 ### 3. `POST /api/synth`
-Generates a synthetic test signal with known ground-truth click locations, runs the DSP pipeline, and returns benchmark performance metrics (Precision, Recall, F1).
+Generates a synthetic test signal with known ground-truth click locations, runs the DSP pipeline, and returns benchmark performance metrics (Precision, Recall, F1, mean timing error).
 
-- **Content-Type**: `application/json`
+- **Content-Type**: `application/x-www-form-atomic` or `multipart/form-data`
 - **Response**: JSON payload containing ground-truth timestamps, detected gaps, Precision/Recall/F1 scores, and plot vectors.
+
+---
+
+## 🛠️ CLI Tools & Automated Testing
+
+KeyClean includes standalone CLI tools for benchmarking, parameter tuning, and unit testing:
+
+### 1. CLI Demo & Benchmark Runner
+Clean real audio files or run synthetic benchmarks directly from your terminal:
+```bash
+# Run synthetic benchmark with hysteresis double-thresholding
+python demo/run_demo.py --mode hysteresis --threshold 10.0 --low-threshold 2.5
+
+# Clean a real audio file
+python demo/run_demo.py --real path/to/recording.wav --output data/cleaned_output.wav
+```
+
+### 2. Hyperparameter Grid Search Optimizer
+Sweep over detection parameters to find optimal F1 score profiles:
+```bash
+python demo/grid_search.py
+```
+
+### 3. Automated Unit Test Suite
+Execute unit tests for signal normalization, NaN sanitization, boundary inpainting, and detection logic:
+```bash
+python tests/test_dsp.py
+```
 
 ---
 
@@ -168,7 +196,7 @@ Generates a synthetic test signal with known ground-truth click locations, runs 
 ## ⚠️ Known Limitations & Future Roadmap
 
 ### Current Limitations
-- **WAV Mono/Stereo PCM Only**: Currently optimized for uncompressed PCM WAV format (automatic browser recording transcodes to WAV).
+- **Multi-Format Decoding**: Audio formats like `.mp3` and `.m4a` require system `ffmpeg` for decoding via `pydub`. WAV, FLAC, and OGG are supported natively by `soundfile`.
 - **Overlapping Speech & Click Transients**: When a click coincides exactly with loud voiced vowels, inpainting crossfades across the transient region, which can slightly attenuate local fundamental frequencies.
 
 ### Future Roadmap
