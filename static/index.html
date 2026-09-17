@@ -431,16 +431,33 @@
                 </div>
                 <!-- CHART -->
                 <div class="glass-card chart-container" id="visualization-card" style="display: none;">
-                    <h3 class="widget-subtitle">DSP Analysis Timeline</h3>
-                    <p class="chart-desc">Z-score trace showing where clicks were detected and inpainted.</p>
+                    <div class="chart-header-row">
+                        <div>
+                            <h3 class="widget-subtitle">DSP Analysis Timeline</h3>
+                            <p class="chart-desc">Multi-layer DSP signal timeline &amp; inpainted gap breakdown.</p>
+                        </div>
+                        <div class="chart-layer-toggles">
+                            <button id="toggle-layer-waveform" class="layer-btn active" data-layer="waveform">
+                                <span class="layer-dot wave-dot"></span> Waveform
+                            </button>
+                            <button id="toggle-layer-zscore" class="layer-btn active" data-layer="zscore">
+                                <span class="layer-dot z-dot"></span> Z-Score
+                            </button>
+                            <button id="toggle-layer-onset" class="layer-btn active" data-layer="onset">
+                                <span class="layer-dot onset-dot"></span> Onset Strength
+                            </button>
+                        </div>
+                    </div>
                     <div class="canvas-wrapper">
                         <canvas id="dsp-canvas"></canvas>
                         <div id="chart-tooltip" class="chart-tooltip"></div>
                     </div>
                     <div class="chart-legend">
-                        <div class="legend-item"><span class="legend-dot z-dot"></span>Z-score</div>
+                        <div class="legend-item"><span class="legend-dot wave-dot"></span>Waveform</div>
+                        <div class="legend-item"><span class="legend-dot z-dot"></span>Z-Score</div>
+                        <div class="legend-item"><span class="legend-dot onset-dot"></span>Onset Strength</div>
                         <div class="legend-item"><span class="legend-dot thresh-dot"></span>Threshold</div>
-                        <div class="legend-item"><span class="legend-dot click-dot"></span>Inpainted Region</div>
+                        <div class="legend-item"><span class="legend-dot click-dot"></span>Inpainted Gap</div>
                         <div class="legend-item" id="legend-gt"><span class="legend-dot gt-dot"></span>Ground Truth</div>
                     </div>
                 </div>
