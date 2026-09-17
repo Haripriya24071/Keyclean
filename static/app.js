@@ -87,32 +87,50 @@ document.addEventListener('DOMContentLoaded', () => {
     let detectedGaps = null;
     let selectedFile = null;
 
-    // ── Sliders
+    // ── Sliders & Controls
+    const modeInput = document.getElementById('mode');
     const thresholdInput = document.getElementById('threshold');
+    const lowThresholdInput = document.getElementById('low-threshold');
     const prePadInput = document.getElementById('pre-pad');
     const postPadInput = document.getElementById('post-pad');
     const rollingWindowInput = document.getElementById('rolling-window');
+    
     const valThreshold = document.getElementById('val-threshold');
+    const valLowThreshold = document.getElementById('val-low-threshold');
     const valPrePad = document.getElementById('val-pre-pad');
     const valPostPad = document.getElementById('val-post-pad');
     const valRollingWindow = document.getElementById('val-rolling-window');
+    const groupLowThreshold = document.getElementById('group-low-threshold');
 
     function updateSliderLabels() {
         if (thresholdInput) valThreshold.textContent = parseFloat(thresholdInput.value).toFixed(1);
+        if (lowThresholdInput) valLowThreshold.textContent = parseFloat(lowThresholdInput.value).toFixed(1);
         if (prePadInput) valPrePad.textContent = prePadInput.value + ' ms';
         if (postPadInput) valPostPad.textContent = postPadInput.value + ' ms';
         if (rollingWindowInput) valRollingWindow.textContent = rollingWindowInput.value;
     }
 
-    [thresholdInput, prePadInput, postPadInput, rollingWindowInput].forEach(s => {
+    function toggleModeControls() {
+        if (groupLowThreshold && modeInput) {
+            groupLowThreshold.style.display = modeInput.value === 'hysteresis' ? 'flex' : 'none';
+        }
+    }
+
+    modeInput?.addEventListener('change', toggleModeControls);
+    toggleModeControls();
+
+    [thresholdInput, lowThresholdInput, prePadInput, postPadInput, rollingWindowInput].forEach(s => {
         if (s) s.addEventListener('input', updateSliderLabels);
     });
 
     document.getElementById('btn-reset')?.addEventListener('click', () => {
+        if (modeInput) modeInput.value = 'standard';
         if (thresholdInput) thresholdInput.value = 12.0;
+        if (lowThresholdInput) lowThresholdInput.value = 2.5;
         if (prePadInput) prePadInput.value = 5;
         if (postPadInput) postPadInput.value = 15;
         if (rollingWindowInput) rollingWindowInput.value = 150;
+        toggleModeControls();
         updateSliderLabels();
     });
 
@@ -186,6 +204,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!ctx || !currentPlotData) return;
         const { times, z_scores } = currentPlotData;
         const threshold = parseFloat(thresholdInput?.value || 12);
+        const lowThreshold = parseFloat(lowThresholdInput?.value || 2.5);
+        const isHysteresis = modeInput?.value === 'hysteresis';
         const maxVal = Math.max(Math.max(...z_scores), threshold * 1.5, 10);
         const pL = 40, pR = 15, pT = 20, pB = 25;
         const gW = canvasWidth - pL - pR;
@@ -238,6 +258,14 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.setLineDash([]);
         }
 
+        // Low Threshold line (if hysteresis mode)
+        if (isHysteresis) {
+            ctx.strokeStyle = '#a55eea'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+            const lty = yOf(lowThreshold);
+            ctx.beginPath(); ctx.moveTo(pL, lty); ctx.lineTo(canvasWidth - pR, lty); ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
         // Threshold line
         ctx.strokeStyle = '#ff9f43'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 3]);
         const ty = yOf(threshold);
@@ -276,7 +304,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── API helpers
     function getDSPFormData() {
         const fd = new FormData();
+        fd.append('mode', modeInput?.value || 'standard');
         fd.append('threshold', thresholdInput?.value || 12);
+        fd.append('low_threshold', lowThresholdInput?.value || 2.5);
         fd.append('pre_pad_sec', ((parseFloat(prePadInput?.value || 5)) / 1000).toString());
         fd.append('post_pad_sec', ((parseFloat(postPadInput?.value || 15)) / 1000).toString());
         fd.append('rolling_window', rollingWindowInput?.value || 150);
