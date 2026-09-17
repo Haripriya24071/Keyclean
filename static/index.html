@@ -260,11 +260,29 @@
                 <h2 class="panel-title">DSP Configuration</h2>
                 <div class="control-group">
                     <div class="slider-header">
-                        <label for="threshold">Detection Threshold (Z-score)</label>
+                        <label for="mode">Detection Mode</label>
+                    </div>
+                    <select id="mode" class="select-input">
+                        <option value="standard" selected>Standard (Single Threshold)</option>
+                        <option value="hysteresis">Hysteresis (Double Threshold)</option>
+                    </select>
+                    <p class="slider-desc">Hysteresis traces backward & forward for quieter click tails.</p>
+                </div>
+                <div class="control-group">
+                    <div class="slider-header">
+                        <label for="threshold">Peak Threshold (Z-score)</label>
                         <span class="slider-val" id="val-threshold">12.0</span>
                     </div>
                     <input type="range" id="threshold" min="3.0" max="30.0" step="0.5" value="12.0">
                     <p class="slider-desc">Higher = fewer false positives; Lower = catches quieter clicks.</p>
+                </div>
+                <div class="control-group" id="group-low-threshold" style="display: none;">
+                    <div class="slider-header">
+                        <label for="low-threshold">Low Threshold (Z-score)</label>
+                        <span class="slider-val" id="val-low-threshold">2.5</span>
+                    </div>
+                    <input type="range" id="low-threshold" min="0.5" max="10.0" step="0.5" value="2.5">
+                    <p class="slider-desc">Hysteresis trace-back cut-off Z-score.</p>
                 </div>
                 <div class="control-group">
                     <div class="slider-header">
