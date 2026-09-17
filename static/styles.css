@@ -905,6 +905,69 @@ canvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
     line-height: 1.4;
 }
 
+/* ── CHART LAYER TOGGLE TOOLBAR ── */
+.chart-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.chart-layer-toggles {
+    display: flex;
+    gap: 0.5rem;
+}
+.layer-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-head);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s ease;
+}
+.layer-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text);
+}
+.layer-btn.active {
+    background: rgba(13, 27, 42, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+.layer-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.wave-dot { background: #4facfe; box-shadow: 0 0 6px #4facfe; }
+.z-dot { background: #00f2fe; box-shadow: 0 0 6px #00f2fe; }
+.onset-dot { background: #a55eea; box-shadow: 0 0 6px #a55eea; }
+
+/* Enhanced tooltip styling for gap details */
+.chart-tooltip {
+    position: absolute;
+    background: rgba(3, 6, 12, 0.92);
+    border: 1px solid rgba(255, 42, 127, 0.5);
+    backdrop-filter: blur(8px);
+    color: var(--text);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    pointer-events: none;
+    z-index: 50;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+
 /* ── GLOBAL ANIMATIONS ── */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
