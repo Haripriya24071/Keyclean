@@ -559,6 +559,66 @@ code, pre, .slider-val, .rec-timer, .metric-val, .metric-valSub {
     border-left: 3px solid var(--cyan);
     padding-left: 0.75rem;
 }
+.panel-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.preset-status-tag {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--cyan);
+    background: rgba(0, 242, 254, 0.08);
+    border: 1px solid rgba(0, 242, 254, 0.2);
+    padding: 0.2rem 0.55rem;
+    border-radius: 99px;
+}
+.preset-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: rgba(5, 11, 20, 0.5);
+    border: 1px solid var(--border);
+    padding: 0.75rem;
+    border-radius: 10px;
+}
+.preset-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+.preset-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+}
+.preset-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    font-family: var(--font-head);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.45rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.preset-btn:hover {
+    background: rgba(0, 242, 254, 0.1);
+    border-color: rgba(0, 242, 254, 0.3);
+    color: var(--cyan);
+}
+.preset-btn.active {
+    background: linear-gradient(135deg, rgba(0, 242, 254, 0.2) 0%, rgba(79, 172, 254, 0.2) 100%);
+    border-color: var(--cyan);
+    color: var(--cyan);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.25);
+}
 .control-group { display: flex; flex-direction: column; gap: 0.5rem; }
 .slider-header { display: flex; justify-content: space-between; align-items: center; }
 .slider-header label { font-size: 0.92rem; font-weight: 500; }
