@@ -200,17 +200,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('resize', () => { if (currentPlotData) { resizeCanvas(); drawChart(); } });
 
+    // ── Layer Visibility State ──
+    const activeLayers = {
+        waveform: true,
+        zscore: true,
+        onset: true
+    };
+
+    ['waveform', 'zscore', 'onset'].forEach(layer => {
+        const btn = document.getElementById(`toggle-layer-${layer}`);
+        btn?.addEventListener('click', () => {
+            activeLayers[layer] = !activeLayers[layer];
+            btn.classList.toggle('active', activeLayers[layer]);
+            if (currentPlotData) drawChart();
+        });
+    });
+
     function drawChart() {
         if (!ctx || !currentPlotData) return;
-        const { times, z_scores } = currentPlotData;
+        const { times, z_scores, onset_strength, waveform } = currentPlotData;
         const threshold = parseFloat(thresholdInput?.value || 12);
         const lowThreshold = parseFloat(lowThresholdInput?.value || 2.5);
         const isHysteresis = modeInput?.value === 'hysteresis';
-        const maxVal = Math.max(Math.max(...z_scores), threshold * 1.5, 10);
+
+        const maxZ = z_scores ? Math.max(...z_scores) : 10;
+        const maxVal = Math.max(maxZ, threshold * 1.5, 10);
         const pL = 40, pR = 15, pT = 20, pB = 25;
         const gW = canvasWidth - pL - pR;
         const gH = canvasHeight - pT - pB;
-        const maxT = times[times.length - 1] || 6;
+        const maxT = (times && times.length) ? times[times.length - 1] : 6;
 
         ctx.fillStyle = '#03060c';
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
@@ -234,13 +252,13 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.fillText(s + 's', gx, canvasHeight - pB + 14);
         }
 
-        // Inpainted gaps
+        // Inpainted gap rectangles
         if (detectedGaps) {
             detectedGaps.forEach(gap => {
                 const x1 = xOf(gap.start), x2 = xOf(gap.end);
                 ctx.fillStyle = 'rgba(255,42,127,0.15)';
                 ctx.fillRect(x1, pT, x2 - x1, gH);
-                ctx.strokeStyle = 'rgba(255,42,127,0.35)';
+                ctx.strokeStyle = 'rgba(255,42,127,0.4)';
                 ctx.lineWidth = 1.5;
                 ctx.beginPath(); ctx.moveTo(x1, pT); ctx.lineTo(x1, canvasHeight - pB);
                 ctx.moveTo(x2, pT); ctx.lineTo(x2, canvasHeight - pB); ctx.stroke();
@@ -258,31 +276,65 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.setLineDash([]);
         }
 
-        // Low Threshold line (if hysteresis mode)
-        if (isHysteresis) {
-            ctx.strokeStyle = '#a55eea'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+        // Layer 1: Audio Waveform (Light Blue, normalized)
+        if (activeLayers.waveform && waveform && waveform.length > 0) {
+            const maxW = Math.max(...waveform.map(Math.abs)) || 1;
+            const midY = pT + gH / 2;
+            ctx.strokeStyle = 'rgba(79, 172, 254, 0.45)';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            const wLen = waveform.length;
+            waveform.forEach((val, i) => {
+                const wx = pL + (i / (wLen - 1)) * gW;
+                const wy = midY - (val / maxW) * (gH / 2.2);
+                i === 0 ? ctx.moveTo(wx, wy) : ctx.lineTo(wx, wy);
+            });
+            ctx.stroke();
+        }
+
+        // Low Threshold line (if hysteresis mode & z-score layer active)
+        if (isHysteresis && activeLayers.zscore) {
+            ctx.strokeStyle = '#a55eea'; ctx.lineWidth = 1.2; ctx.setLineDash([4, 4]);
             const lty = yOf(lowThreshold);
             ctx.beginPath(); ctx.moveTo(pL, lty); ctx.lineTo(canvasWidth - pR, lty); ctx.stroke();
             ctx.setLineDash([]);
         }
 
-        // Threshold line
-        ctx.strokeStyle = '#ff9f43'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 3]);
-        const ty = yOf(threshold);
-        ctx.beginPath(); ctx.moveTo(pL, ty); ctx.lineTo(canvasWidth - pR, ty); ctx.stroke();
-        ctx.setLineDash([]);
+        // Threshold line (if z-score layer active)
+        if (activeLayers.zscore) {
+            ctx.strokeStyle = '#ff9f43'; ctx.lineWidth = 1.5; ctx.setLineDash([6, 3]);
+            const ty = yOf(threshold);
+            ctx.beginPath(); ctx.moveTo(pL, ty); ctx.lineTo(canvasWidth - pR, ty); ctx.stroke();
+            ctx.setLineDash([]);
+        }
 
-        // Z-score wave
-        ctx.strokeStyle = '#00f2fe'; ctx.lineWidth = 1.8;
-        ctx.beginPath();
-        times.forEach((t, i) => {
-            const x = xOf(t), y = yOf(z_scores[i]);
-            i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        });
-        ctx.stroke();
+        // Layer 3: Onset Strength (Violet, dashed)
+        if (activeLayers.onset && onset_strength && onset_strength.length > 0) {
+            const maxOnset = Math.max(...onset_strength) || 1;
+            ctx.strokeStyle = '#a55eea'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 3]);
+            ctx.beginPath();
+            times.forEach((t, i) => {
+                const ox = xOf(t);
+                const oy = pT + gH - (onset_strength[i] / maxOnset) * gH;
+                i === 0 ? ctx.moveTo(ox, oy) : ctx.lineTo(ox, oy);
+            });
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+
+        // Layer 2: Z-Score trace (Cyan)
+        if (activeLayers.zscore && z_scores && z_scores.length > 0) {
+            ctx.strokeStyle = '#00f2fe'; ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            times.forEach((t, i) => {
+                const zx = xOf(t), zy = yOf(z_scores[i]);
+                i === 0 ? ctx.moveTo(zx, zy) : ctx.lineTo(zx, zy);
+            });
+            ctx.stroke();
+        }
     }
 
-    // Tooltip
+    // Enhanced Tooltip (with gap duration in ms on hover over inpainted region)
     const chartTooltip = document.getElementById('chart-tooltip');
     dspCanvas?.addEventListener('mousemove', e => {
         if (!currentPlotData || !chartTooltip) return;
@@ -291,13 +343,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const pL = 40, pR = 15;
         const gW = canvasWidth - pL - pR;
         if (mx < pL || mx > canvasWidth - pR) { chartTooltip.style.display = 'none'; return; }
-        const hT = ((mx - pL) / gW) * (currentPlotData.times[currentPlotData.times.length - 1] || 6);
+        
+        const maxT = (currentPlotData.times && currentPlotData.times.length) ? currentPlotData.times[currentPlotData.times.length - 1] : 6;
+        const hT = ((mx - pL) / gW) * maxT;
+
+        // Check if mouse is hovering over an inpainted gap
+        let hoveredGap = null;
+        if (detectedGaps) {
+            hoveredGap = detectedGaps.find(g => hT >= g.start && hT <= g.end);
+        }
+
         let ci = 0, md = Infinity;
-        currentPlotData.times.forEach((t, i) => { const d = Math.abs(t - hT); if (d < md) { md = d; ci = i; } });
-        chartTooltip.style.left = (mx + 14) + 'px';
+        if (currentPlotData.times) {
+            currentPlotData.times.forEach((t, i) => { const d = Math.abs(t - hT); if (d < md) { md = d; ci = i; } });
+        }
+
+        chartTooltip.style.left = Math.min(mx + 14, canvasWidth - 180) + 'px';
         chartTooltip.style.top = (e.clientY - rect.top - 30) + 'px';
         chartTooltip.style.display = 'block';
-        chartTooltip.innerHTML = `<div><b>Time:</b> ${currentPlotData.times[ci].toFixed(3)}s</div><div><b>Z:</b> ${currentPlotData.z_scores[ci].toFixed(2)}</div>`;
+
+        if (hoveredGap) {
+            const gapMs = Math.round((hoveredGap.end - hoveredGap.start) * 1000);
+            chartTooltip.innerHTML = `
+                <div style="color: #ff2a7f; font-weight:700;">✂️ Inpainted Gap: ${gapMs} ms</div>
+                <div><b>Interval:</b> ${hoveredGap.start.toFixed(3)}s – ${hoveredGap.end.toFixed(3)}s</div>
+                <div><b>Z-score:</b> ${currentPlotData.z_scores[ci] ? currentPlotData.z_scores[ci].toFixed(2) : '-'}</div>
+            `;
+        } else {
+            chartTooltip.innerHTML = `
+                <div><b>Time:</b> ${hT.toFixed(3)}s</div>
+                <div><b>Z-score:</b> ${currentPlotData.z_scores[ci] ? currentPlotData.z_scores[ci].toFixed(2) : '-'}</div>
+            `;
+        }
     });
     dspCanvas?.addEventListener('mouseleave', () => { if (chartTooltip) chartTooltip.style.display = 'none'; });
 
