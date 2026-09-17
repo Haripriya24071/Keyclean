@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KEYCLEAN — Real-time Keystroke Noise Removal</title>
     <meta name="description" content="KeyClean removes keyboard click noise from your mic in real-time without muffling your voice.">
-    <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
@@ -27,7 +27,7 @@
         </div>
         <div class="nav-status">
             <span class="pulse-dot"></span>
-            <span>DSP Ready</span>
+            <span>DSP Engine Ready</span>
         </div>
     </nav>
 
@@ -38,52 +38,54 @@
         <!-- HERO SECTION -->
         <section class="hero">
             <div class="hero-content">
-                <div class="hero-badge">🎙️ Real-Time Audio DSP</div>
+                <div class="hero-badge">🎙️ Real-Time Audio DSP Engine</div>
                 <h1 class="hero-headline">
-                    <span class="bubbly-title">KEYCLEAN</span>
+                    <span class="headline-title">KEYCLEAN</span>
                 </h1>
-                <p class="hero-sub">Stop letting keyboard clicks ruin your calls.<br>We detect and erase them — without touching your voice.</p>
+                <p class="hero-sub">Keystroke noise removal designed for serious audio engineering.<br>We detect and erase transients — without muffling your voice.</p>
                 <div class="hero-cta">
                     <button class="btn-primary btn-large" onclick="navigate('dashboard')">
-                        🚀 Try the Dashboard
+                        🚀 Launch DSP Dashboard
                     </button>
                     <button class="btn-ghost btn-large" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">
                         Learn How It Works ↓
                     </button>
                 </div>
             </div>
-            <!-- Hero Keyboard Visual -->
-            <div class="hero-keyboard-wrap">
-                <div class="hero-keyboard-label">
-                    <span class="mute-badge">🔇 MUTED</span>
-                    <span>Keyboard noise eliminated</span>
+            <!-- Hero Audio DSP Waveform Comparison Visual -->
+            <div class="hero-waveform-wrap glass-card">
+                <div class="waveform-box noisy-box">
+                    <div class="wf-header">
+                        <span class="wf-dot noisy-dot"></span>
+                        <span class="wf-title">Noisy Input Signal</span>
+                        <span class="amber-badge">⚡ CLICK SPIKES DETECTED</span>
+                    </div>
+                    <svg class="waveform-svg" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Base voice wave -->
+                        <path d="M0,40 Q20,25 40,40 T80,40 T120,40 T160,40 T200,40 T240,40 T280,40 T320,40" fill="none" stroke="rgba(79,172,254,0.4)" stroke-width="2"/>
+                        <!-- Transient Click Spikes in Amber -->
+                        <g class="click-spikes">
+                            <path d="M50,40 L52,10 L54,70 L56,40" stroke="#f59e0b" stroke-width="2.5" fill="none" class="spike-anim spike-1"/>
+                            <path d="M140,40 L142,5 L144,75 L146,40" stroke="#f59e0b" stroke-width="2.5" fill="none" class="spike-anim spike-2"/>
+                            <path d="M230,40 L232,12 L234,68 L236,40" stroke="#f59e0b" stroke-width="2.5" fill="none" class="spike-anim spike-3"/>
+                        </g>
+                    </svg>
                 </div>
-                <div class="mini-keyboard">
-                    <div class="mini-row">
-                        <span class="mkey">Q</span><span class="mkey">W</span><span class="mkey">E</span><span class="mkey">R</span><span class="mkey">T</span><span class="mkey">Y</span><span class="mkey">U</span><span class="mkey">I</span><span class="mkey">O</span><span class="mkey">P</span>
-                    </div>
-                    <div class="mini-row mini-row-shift">
-                        <span class="mkey">A</span><span class="mkey">S</span><span class="mkey">D</span><span class="mkey">F</span><span class="mkey">G</span><span class="mkey">H</span><span class="mkey">J</span><span class="mkey">K</span><span class="mkey">L</span>
-                    </div>
-                    <div class="mini-row mini-row-shift2">
-                        <span class="mkey">Z</span><span class="mkey">X</span><span class="mkey">C</span><span class="mkey">V</span><span class="mkey">B</span><span class="mkey">N</span><span class="mkey">M</span>
-                    </div>
-                    <div class="mini-row">
-                        <span class="mkey mkey-space">SPACE</span>
-                    </div>
+                
+                <div class="waveform-arrow">
+                    <span class="dsp-arrow-icon">➔</span>
+                    <span class="dsp-arrow-label">DSP INPAINTING</span>
                 </div>
-                <!-- Noise wave strike-through effect -->
-                <div class="noise-cross">
-                    <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
-                        <polyline points="0,30 20,10 40,50 60,15 80,45 100,20 120,40 140,5 160,50 180,25 200,35"
-                            fill="none" stroke="url(#noiseGrad)" stroke-width="3" class="noise-wave"/>
-                        <line x1="10" y1="55" x2="190" y2="5" stroke="#ff2a7f" stroke-width="3.5" stroke-linecap="round" class="cross-line"/>
-                        <defs>
-                            <linearGradient id="noiseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="#00f2fe"/>
-                                <stop offset="100%" stop-color="#4facfe"/>
-                            </linearGradient>
-                        </defs>
+
+                <div class="waveform-box clean-box">
+                    <div class="wf-header">
+                        <span class="wf-dot clean-dot"></span>
+                        <span class="wf-title">Cleaned Output Signal</span>
+                        <span class="clean-badge">✓ CLICK NOISE ELIMINATED</span>
+                    </div>
+                    <svg class="waveform-svg" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Clean smooth sine wave -->
+                        <path d="M0,40 Q20,25 40,40 T80,40 T120,40 T160,40 T200,40 T240,40 T280,40 T320,40" fill="none" stroke="#00f2fe" stroke-width="2.5" class="clean-wave-anim"/>
                     </svg>
                 </div>
             </div>
