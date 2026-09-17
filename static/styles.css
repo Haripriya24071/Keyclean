@@ -746,7 +746,48 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); box-sha
 
 /* Audio Players */
 .audio-comparison { display: flex; flex-direction: column; gap: 0.75rem; animation: fadeIn 0.4s; }
-.widget-subtitle { font-family: var(--font-head); font-size: 1.05rem; font-weight: 700; margin-bottom: 0.25rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+.audio-comparison-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.speed-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+.speed-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 500;
+}
+.speed-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--muted);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.speed-btn:hover {
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.1);
+}
+.speed-btn.active {
+    background: rgba(0, 242, 254, 0.15);
+    border-color: var(--cyan);
+    color: var(--cyan);
+    font-weight: 600;
+}
+.widget-subtitle { font-family: var(--font-head); font-size: 1.05rem; font-weight: 700; margin-bottom: 0; }
 .audio-row { display: flex; flex-direction: column; gap: 0.6rem; }
 .audio-item {
     background: rgba(255,255,255,0.02);
