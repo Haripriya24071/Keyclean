@@ -390,4 +390,220 @@ document.addEventListener('DOMContentLoaded', () => {
             showLoading(false);
         }
     });
+
+    // ── WAV Encoder Helper ──
+    function encodeWAV(samples, sampleRate) {
+        const buffer = new ArrayBuffer(44 + samples.length * 2);
+        const view = new DataView(buffer);
+        
+        const writeString = (offset, string) => {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        };
+
+        writeString(0, 'RIFF');
+        view.setUint32(4, 36 + samples.length * 2, true);
+        writeString(8, 'WAVE');
+        writeString(12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true); // Mono PCM
+        view.setUint16(22, 1, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * 2, true);
+        view.setUint16(32, 2, true);
+        view.setUint16(34, 16, true);
+        writeString(36, 'data');
+        view.setUint32(40, samples.length * 2, true);
+
+        let offset = 44;
+        for (let i = 0; i < samples.length; i++, offset += 2) {
+            const s = Math.max(-1, Math.min(1, samples[i]));
+            view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+        }
+
+        return new Blob([buffer], { type: 'audio/wav' });
+    }
+
+    // ── RECORD & CLEAN ──
+    const btnRecordClean = document.getElementById('btn-record-clean');
+    const micErrorBanner = document.getElementById('mic-error-banner');
+    const recordingCard = document.getElementById('recording-card');
+    const recCountdown = document.getElementById('rec-countdown');
+    const micCanvas = document.getElementById('mic-canvas');
+
+    btnRecordClean?.addEventListener('click', async () => {
+        if (micErrorBanner) micErrorBanner.style.display = 'none';
+        
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            if (micErrorBanner) {
+                micErrorBanner.innerHTML = '⚠️ Your browser does not support microphone recording (navigator.mediaDevices.getUserMedia not available).';
+                micErrorBanner.style.display = 'block';
+            }
+            return;
+        }
+
+        let stream;
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (err) {
+            if (micErrorBanner) {
+                let msg = '⚠️ Microphone access was denied or unavailable. Please check your browser permissions.';
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    msg = '🔒 Microphone permission denied. Please allow microphone access in your browser settings to record audio.';
+                } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                    msg = '🎙️ No microphone device found on your system. Please connect a microphone and try again.';
+                }
+                micErrorBanner.innerHTML = msg;
+                micErrorBanner.style.display = 'block';
+            }
+            return;
+        }
+
+        // Show live recording container
+        if (recordingCard) recordingCard.style.display = 'flex';
+        btnRecordClean.disabled = true;
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioCtx.createMediaStreamSource(stream);
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 2048;
+        source.connect(analyser);
+
+        const processor = audioCtx.createScriptProcessor(4096, 1, 1);
+        const recordedBuffers = [];
+
+        processor.onaudioprocess = (e) => {
+            const inputData = e.inputBuffer.getChannelData(0);
+            recordedBuffers.push(new Float32Array(inputData));
+        };
+
+        source.connect(processor);
+        processor.connect(audioCtx.destination);
+
+        // Live mic waveform canvas animation
+        let animFrameId;
+        const micCtx = micCanvas?.getContext('2d');
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        function drawWaveform() {
+            if (!micCtx || !micCanvas) return;
+            animFrameId = requestAnimationFrame(drawWaveform);
+            analyser.getByteTimeDomainData(dataArray);
+
+            const width = micCanvas.parentElement ? micCanvas.parentElement.clientWidth : 300;
+            micCanvas.width = width;
+            micCanvas.height = 60;
+
+            micCtx.fillStyle = '#050b14';
+            micCtx.fillRect(0, 0, width, 60);
+            micCtx.lineWidth = 2;
+            micCtx.strokeStyle = '#ff2a7f';
+            micCtx.beginPath();
+
+            const sliceWidth = width * 1.0 / bufferLength;
+            let x = 0;
+            for (let i = 0; i < bufferLength; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = (v * 60) / 2;
+                if (i === 0) micCtx.moveTo(x, y);
+                else micCtx.lineTo(x, y);
+                x += sliceWidth;
+            }
+            micCtx.stroke();
+        }
+        drawWaveform();
+
+        // 5-second countdown timer
+        let secondsLeft = 5;
+        if (recCountdown) recCountdown.textContent = `${secondsLeft}s remaining`;
+
+        const countdownInterval = setInterval(() => {
+            secondsLeft--;
+            if (secondsLeft > 0) {
+                if (recCountdown) recCountdown.textContent = `${secondsLeft}s remaining`;
+            } else {
+                if (recCountdown) recCountdown.textContent = `Processing audio...`;
+                clearInterval(countdownInterval);
+            }
+        }, 1000);
+
+        // Stop recording after 5 seconds
+        setTimeout(async () => {
+            cancelAnimationFrame(animFrameId);
+            processor.disconnect();
+            source.disconnect();
+            stream.getTracks().forEach(track => track.stop());
+            if (audioCtx.state !== 'closed') await audioCtx.close();
+
+            if (recordingCard) recordingCard.style.display = 'none';
+            btnRecordClean.disabled = false;
+
+            // Merge Float32 buffers
+            let totalLength = 0;
+            recordedBuffers.forEach(b => totalLength += b.length);
+            const mergedSamples = new Float32Array(totalLength);
+            let offset = 0;
+            recordedBuffers.forEach(b => {
+                mergedSamples.set(b, offset);
+                offset += b.length;
+            });
+
+            showLoading(true);
+
+            try {
+                // Send WAV blob to /api/clean
+                const wavBlob = encodeWAV(mergedSamples, audioCtx.sampleRate);
+                const fd = getDSPFormData();
+                fd.append('file', wavBlob, 'recording.wav');
+
+                let res = await fetch('/api/clean', { method: 'POST', body: fd });
+                
+                // Fallback to /api/record if needed
+                if (!res.ok) {
+                    const payload = {
+                        pcm: Array.from(mergedSamples),
+                        sr: audioCtx.sampleRate,
+                        threshold: parseFloat(thresholdInput?.value || 12),
+                        low_threshold: parseFloat(lowThresholdInput?.value || 2.5),
+                        mode: modeInput?.value || 'standard',
+                        pre_pad_sec: parseFloat(prePadInput?.value || 5) / 1000,
+                        post_pad_sec: parseFloat(postPadInput?.value || 15) / 1000,
+                        rolling_window: parseInt(rollingWindowInput?.value || 150)
+                    };
+                    res = await fetch('/api/record', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                }
+
+                if (!res.ok) { const e = await res.json(); throw new Error(e.detail || 'Failed'); }
+                const data = await res.json();
+
+                document.getElementById('audio-real-noisy').src = data.audio_urls.noisy;
+                document.getElementById('audio-real-cleaned').src = data.audio_urls.cleaned;
+                const dlBtn = document.getElementById('btn-download-cleaned');
+                if (dlBtn) dlBtn.href = data.audio_urls.cleaned;
+                ['audio-real-noisy', 'audio-real-cleaned'].forEach(id => document.getElementById(id)?.load());
+                document.getElementById('real-click-count').textContent = data.count;
+
+                currentPlotData = data.plot_data;
+                groundTruthTimes = null;
+                detectedGaps = data.detected_gaps;
+                document.getElementById('legend-gt').style.display = 'none';
+                document.getElementById('real-audio-players').style.display = 'flex';
+
+                const vizCard = document.getElementById('visualization-card');
+                if (vizCard) vizCard.style.display = 'block';
+
+                setTimeout(() => { resizeCanvas(); drawChart(); }, 60);
+            } catch (err) {
+                alert('Record & Clean Error: ' + err.message);
+            } finally {
+                showLoading(false);
+            }
+        }, 5000);
+    });
 });
