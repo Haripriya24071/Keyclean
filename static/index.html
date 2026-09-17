@@ -259,7 +259,30 @@
         <div class="dashboard-grid">
             <!-- LEFT: DSP CONTROLS -->
             <section class="control-panel glass-card">
-                <h2 class="panel-title">DSP Configuration</h2>
+                <div class="panel-header-row">
+                    <h2 class="panel-title">DSP Configuration</h2>
+                    <span id="preset-active-tag" class="preset-status-tag">Profile: Balanced</span>
+                </div>
+                
+                <!-- DSP Presets Selector -->
+                <div class="preset-container">
+                    <div class="preset-label">DSP Presets</div>
+                    <div class="preset-buttons">
+                        <button type="button" class="preset-btn active" data-preset="balanced" title="Balanced default profile for standard membrane keyboards and normal mic gain.">
+                            Balanced
+                        </button>
+                        <button type="button" class="preset-btn" data-preset="aggressive" title="Maximum click removal for noisy environments. Catches quieter clicks.">
+                            Aggressive
+                        </button>
+                        <button type="button" class="preset-btn" data-preset="conservative" title="High precision profile for quiet rooms. Strictly avoids muffling voice.">
+                            Conservative
+                        </button>
+                        <button type="button" class="preset-btn" data-preset="mech" title="Tailored for loud mechanical switches with extended click resonance tails.">
+                            Mech Keyboard
+                        </button>
+                    </div>
+                </div>
+
                 <div class="control-group">
                     <div class="slider-header">
                         <label for="mode">Detection Mode</label>
