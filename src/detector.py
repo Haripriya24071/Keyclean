@@ -35,6 +35,16 @@ def detect_keystrokes(y, sr, frame_size=512, hop_size=128, threshold=12.0, low_t
     metrics_info : dict
         Debugging and plotting info (z_scores, onset_strength, etc.)
     """
+    # Sanitize and clamp numeric parameters
+    sr = max(1, int(sr))
+    frame_size = max(64, int(frame_size))
+    hop_size = max(1, int(hop_size))
+    threshold = max(0.1, float(threshold))
+    low_threshold = max(0.0, float(low_threshold))
+    rolling_window = max(5, int(rolling_window))
+    pre_pad_sec = max(0.0, float(pre_pad_sec))
+    post_pad_sec = max(0.0, float(post_pad_sec))
+
     y = np.nan_to_num(np.asarray(y, dtype=np.float32), nan=0.0, posinf=0.0, neginf=0.0)
     n_samples = len(y)
     
