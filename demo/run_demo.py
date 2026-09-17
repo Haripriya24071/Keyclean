@@ -36,11 +36,13 @@ def load_wav(filepath):
 
 def evaluate_detections(gaps, ground_truth_secs, sr, tolerance_sec=0.03):
     """
-    Matches detected gaps to ground-truth keystroke timestamps.
+    Matches detected gaps to ground-truth keystroke timestamps and calculates
+    precision, recall, F1, and mean timing offset error (in ms).
     """
     tp = 0
     fn = 0
     fp = 0
+    timing_errors_ms = []
     
     # Track which gaps matched a ground-truth click
     matched_gaps = set()
@@ -56,6 +58,8 @@ def evaluate_detections(gaps, ground_truth_secs, sr, tolerance_sec=0.03):
             if (start - tol) <= gt_sample <= (end + tol):
                 match_found = True
                 matched_gaps.add(i)
+                gap_center = (start + end) / 2.0
+                timing_errors_ms.append(abs(gt_sample - gap_center) / sr * 1000.0)
                 break
                 
         if match_found:
@@ -69,6 +73,7 @@ def evaluate_detections(gaps, ground_truth_secs, sr, tolerance_sec=0.03):
     precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
     recall = tp / len(ground_truth_secs) if len(ground_truth_secs) > 0 else 0.0
     f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
+    mean_error = float(np.mean(timing_errors_ms)) if len(timing_errors_ms) > 0 else 0.0
     
     return {
         "tp": tp,
@@ -76,7 +81,8 @@ def evaluate_detections(gaps, ground_truth_secs, sr, tolerance_sec=0.03):
         "fn": fn,
         "precision": precision,
         "recall": recall,
-        "f1": f1
+        "f1": f1,
+        "mean_timing_error_ms": round(mean_error, 2)
     }
 
 def main():
