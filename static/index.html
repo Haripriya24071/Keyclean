@@ -372,11 +372,32 @@
                     <!-- TAB: REAL FILE -->
                     <div class="tab-pane" id="tab-real">
                         <div class="glass-card instruction-card">
-                            <h3>Keystroke Remover — Real Recording</h3>
-                            <p>Upload a <code>.wav</code> recording with keyboard noise. The DSP engine will detect and inpaint all click gaps.</p>
+                            <h3>Keystroke Remover — Real Audio</h3>
+                            <p>Record live mic audio for 5 seconds or upload a <code>.wav</code> recording with keyboard click noise.</p>
+                            
+                            <!-- Permission Error Banner -->
+                            <div id="mic-error-banner" class="error-banner" style="display: none;"></div>
+
+                            <!-- Live Recording Container -->
+                            <div id="recording-card" class="recording-card" style="display: none;">
+                                <div class="recording-header">
+                                    <span class="rec-badge"><span class="rec-dot"></span> RECORDING</span>
+                                    <span class="rec-timer" id="rec-countdown">5s remaining</span>
+                                </div>
+                                <canvas id="mic-canvas" class="mic-canvas"></canvas>
+                                <p class="rec-hint">Type on your keyboard now! DSP will detect and remove click transients.</p>
+                            </div>
+
+                            <div class="action-buttons-row">
+                                <button id="btn-record-clean" class="btn-primary btn-record">
+                                    <span class="rec-icon">🎤</span> Record 5s &amp; Clean
+                                </button>
+                                <span class="or-divider">OR</span>
+                            </div>
+
                             <div class="drop-zone" id="drop-zone">
                                 <span class="drop-icon">📤</span>
-                                <span class="drop-text">Drag & Drop WAV file or <span class="browse-link">browse</span></span>
+                                <span class="drop-text">Drag &amp; Drop WAV file or <span class="browse-link">browse</span></span>
                                 <input type="file" id="file-input" accept=".wav" style="display: none;">
                             </div>
                             <div class="upload-actions" id="upload-actions" style="display: none;">
