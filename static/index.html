@@ -562,14 +562,17 @@
         </footer>
     </div>
 
-    <!-- LOADING SPINNER -->
+    <!-- LOADING SPINNER & SEQUENTIAL STAGE OVERLAY -->
     <div class="loading-overlay hidden" id="loading-overlay">
         <div class="spinner-container">
             <div class="spinner"></div>
-            <div class="loading-text">Cleaning Audio Tracks...</div>
-            <div class="pulse-text">Inpainting Waveform Continua</div>
+            <div class="loading-text" id="loading-stage-text">Analyzing audio frames...</div>
+            <div class="pulse-text">KeyClean DSP Pipeline Active</div>
         </div>
     </div>
+
+    <!-- TOAST NOTIFICATION SYSTEM CONTAINER -->
+    <div id="toast-container" class="toast-container"></div>
 
     <script src="/static/app.js"></script>
 </body>
