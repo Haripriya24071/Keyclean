@@ -820,6 +820,91 @@ canvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
 .loading-text { font-family: var(--font-head); font-size: 1.25rem; font-weight: 700; }
 .pulse-text { font-size: 0.78rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; animation: fadePulse 1.5s infinite; }
 
+/* ── RECORDING CONTROLS & VISUALIZER ── */
+.btn-record {
+    background: linear-gradient(135deg, #ff2a7f 0%, #ff5e62 100%);
+    box-shadow: 0 0 15px rgba(255, 42, 127, 0.4);
+}
+.btn-record:hover {
+    box-shadow: 0 0 25px rgba(255, 42, 127, 0.6);
+}
+.action-buttons-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+.or-divider {
+    font-weight: 700;
+    color: var(--muted);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+.recording-card {
+    background: rgba(255, 42, 127, 0.08);
+    border: 1px solid rgba(255, 42, 127, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.recording-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.rec-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-head);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #ff2a7f;
+    letter-spacing: 1px;
+}
+.rec-dot {
+    width: 10px;
+    height: 10px;
+    background: #ff2a7f;
+    border-radius: 50%;
+    animation: recPulse 1s infinite alternate;
+}
+@keyframes recPulse {
+    from { opacity: 0.3; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px #ff2a7f; }
+}
+.rec-timer {
+    font-family: var(--font-head);
+    font-weight: 800;
+    color: var(--cyan);
+    font-size: 1rem;
+}
+.mic-canvas {
+    width: 100%;
+    height: 60px;
+    background: rgba(5, 11, 20, 0.7);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.rec-hint {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-align: center;
+}
+.error-banner {
+    background: rgba(235, 77, 75, 0.15);
+    border: 1px solid rgba(235, 77, 75, 0.4);
+    color: #ff6b6b;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
 /* ── GLOBAL ANIMATIONS ── */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
