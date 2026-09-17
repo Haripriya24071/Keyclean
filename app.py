@@ -20,6 +20,15 @@ os.makedirs("static", exist_ok=True)
 # Mount directories
 app.mount("/data", StaticFiles(directory="data"), name="data")
 
+def downsample_waveform(y: np.ndarray, target_points: int = 1000) -> list:
+    """Downsample 1D numpy audio array y to ~target_points for canvas rendering."""
+    if len(y) == 0:
+        return []
+    if len(y) <= target_points:
+        return [float(v) for v in y]
+    step = len(y) / target_points
+    return [float(y[int(i * step)]) for i in range(target_points)]
+
 @app.get("/", response_class=HTMLResponse)
 async def get_index():
     index_path = "static/index.html"
@@ -84,7 +93,8 @@ async def run_synth(
             "plot_data": {
                 "times": info["frames_t"],
                 "z_scores": info["z_scores"],
-                "onset_strength": info["onset_strength"]
+                "onset_strength": info["onset_strength"],
+                "waveform": downsample_waveform(noisy, 1000)
             },
             "audio_urls": {
                 "noisy": "/data/noisy.wav?t=" + str(np.random.randint(100000)),
@@ -144,13 +154,18 @@ async def clean_audio(
             "count": len(gaps),
             "plot_data": {
                 "times": info["frames_t"],
-                "z_scores": info["z_scores"]
+                "z_scores": info["z_scores"],
+                "onset_strength": info["onset_strength"],
+                "waveform": downsample_waveform(y, 1000)
             },
             "audio_urls": {
                 "noisy": "/data/noisy_upload.wav?t=" + str(np.random.randint(100000)),
                 "cleaned": "/data/cleaned_upload.wav?t=" + str(np.random.randint(100000))
             }
         })
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -197,7 +212,9 @@ async def record_audio(req: PCMRecordRequest):
             "count": len(gaps),
             "plot_data": {
                 "times": info["frames_t"],
-                "z_scores": info["z_scores"]
+                "z_scores": info["z_scores"],
+                "onset_strength": info["onset_strength"],
+                "waveform": downsample_waveform(y, 1000)
             },
             "audio_urls": {
                 "noisy": "/data/recorded_noisy.wav?t=" + str(np.random.randint(100000)),
