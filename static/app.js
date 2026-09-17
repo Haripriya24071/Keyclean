@@ -352,6 +352,16 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast(`Loaded ${file.name}`, 'info', 2000);
     }
 
+    document.getElementById('btn-clear-file')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectedFile = null;
+        if (fileInput) fileInput.value = '';
+        if (uploadActions) uploadActions.style.display = 'none';
+        const realPlayers = document.getElementById('real-audio-players');
+        if (realPlayers) realPlayers.style.display = 'none';
+        showToast('File selection cleared', 'info', 1500);
+    });
+
     // ── Canvas Chart
     const dspCanvas = document.getElementById('dsp-canvas');
     let ctx = dspCanvas ? dspCanvas.getContext('2d') : null;
