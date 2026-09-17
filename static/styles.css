@@ -2,7 +2,7 @@
    KeyClean Stylesheet - v2 Multi-Page Dark Glassmorphism
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Boogaloo&family=Outfit:wght@300;400;500;700;800&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap');
 
 :root {
     --bg: #050b14;
@@ -13,13 +13,14 @@
     --cyan: #00f2fe;
     --blue: #4facfe;
     --rose: #ff2a7f;
+    --amber: #f59e0b;
     --green: #37d67a;
     --orange: #ff9f43;
     --grad: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
     --glow: 0 0 20px rgba(0, 242, 254, 0.35);
     --shadow: 0 8px 32px rgba(0,0,0,0.45);
-    --font-bubble: 'Boogaloo', cursive;
-    --font-head: 'Plus Jakarta Sans', sans-serif;
+    --font-head: 'Space Grotesk', sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
     --font-body: 'Outfit', sans-serif;
 }
 
@@ -36,6 +37,14 @@ body {
     font-family: var(--font-body);
     min-height: 100vh;
     overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-head);
+}
+
+code, pre, .slider-val, .rec-timer, .metric-val, .metric-valSub {
+    font-family: var(--font-mono);
 }
 
 /* ── AMBIENT BLOBS ── */
@@ -77,12 +86,13 @@ body {
 }
 .nav-logo-icon { font-size: 1.5rem; }
 .nav-logo-text {
-    font-family: var(--font-bubble);
-    font-size: 1.6rem;
+    font-family: var(--font-head);
+    font-size: 1.5rem;
+    font-weight: 700;
     background: var(--grad);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    letter-spacing: 1px;
+    letter-spacing: -0.5px;
 }
 .nav-links { display: flex; gap: 0.25rem; }
 .nav-link {
@@ -104,11 +114,19 @@ body {
     align-items: center;
     gap: 0.5rem;
     font-size: 0.8rem;
-    color: var(--green);
-    background: rgba(55,214,122,0.1);
-    border: 1px solid rgba(55,214,122,0.2);
-    padding: 0.3rem 0.85rem;
-    border-radius: 99px;
+    color: var(--muted);
+    font-family: var(--font-mono);
+}
+.pulse-dot {
+    width: 8px; height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
 }
 
 /* ── PAGES ── */
@@ -125,30 +143,31 @@ body {
     box-shadow: var(--shadow);
 }
 
-/* ── BUBBLY TITLE ── */
-.bubbly-title {
-    font-family: var(--font-bubble);
-    font-size: clamp(4rem, 10vw, 9rem);
-    letter-spacing: 4px;
+/* Headline Title in Space Grotesk */
+.headline-title {
+    font-family: var(--font-head);
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    font-weight: 700;
+    letter-spacing: -2px;
     line-height: 1;
     background: var(--grad);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 25px rgba(0,242,254,0.3));
-    text-align: center;
+    text-align: left;
     animation: titlePop 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
 }
 @keyframes titlePop {
-    from { opacity: 0; transform: scale(0.8); }
+    from { opacity: 0; transform: scale(0.92); }
     to { opacity: 1; transform: scale(1); }
 }
 
 /* ────────────────────────────────────
-   HOME PAGE
+   HOME PAGE & HERO WIDGET
 ──────────────────────────────────── */
 .hero {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.1fr 0.9fr;
     gap: 3rem;
     align-items: center;
     max-width: 1300px;
@@ -190,55 +209,86 @@ body {
     animation: fadeSlideUp 0.5s 0.4s both;
 }
 
-/* Hero keyboard widget */
-.hero-keyboard-wrap {
+/* Hero Audio DSP Waveform Comparison Visual */
+.hero-waveform-wrap {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 16px;
+    width: 100%;
+    background: rgba(13, 27, 42, 0.6);
+    border: 1px solid var(--border);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
     animation: fadeSlideUp 0.5s 0.5s both;
 }
-.hero-keyboard-label {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.9rem;
-    color: var(--muted);
-}
-.mute-badge {
-    background: rgba(255,42,127,0.15);
-    border: 1px solid rgba(255,42,127,0.3);
-    color: var(--rose);
-    padding: 0.25rem 0.7rem;
-    border-radius: 99px;
-    font-size: 0.8rem;
-    font-weight: 700;
-}
-.mini-keyboard {
-    background: rgba(10,17,32,0.8);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 12px;
-    padding: 1rem;
+.waveform-box {
+    background: rgba(5, 11, 20, 0.85);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 0.9rem;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+    gap: 0.5rem;
 }
-.mini-row { display: flex; gap: 0.3rem; justify-content: center; }
-.mini-row-shift { padding-left: 10px; }
-.mini-row-shift2 { padding-left: 20px; }
-.mkey {
-    width: 32px; height: 30px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-bottom: 2px solid rgba(0,0,0,0.5);
-    border-radius: 5px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.65rem; font-weight: 700;
-    color: rgba(255,255,255,0.35);
-    font-family: var(--font-body);
+.wf-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    font-family: var(--font-head);
 }
-.mkey-space { width: 140px; }
+.wf-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 0.4rem; }
+.noisy-dot { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+.clean-dot { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+.wf-title { font-weight: 600; color: var(--text); }
+.amber-badge {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    color: var(--amber);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.15rem 0.6rem;
+    border-radius: 99px;
+}
+.clean-badge {
+    background: rgba(0, 242, 254, 0.12);
+    border: 1px solid rgba(0, 242, 254, 0.25);
+    color: var(--cyan);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.15rem 0.6rem;
+    border-radius: 99px;
+}
+.waveform-svg { width: 100%; height: 75px; overflow: visible; }
+
+/* Click Spike animation fading out periodically */
+.spike-anim {
+    animation: spikeFade 3s ease-in-out infinite;
+    transform-origin: center;
+}
+.spike-1 { animation-delay: 0s; }
+.spike-2 { animation-delay: 0.4s; }
+.spike-3 { animation-delay: 0.8s; }
+
+@keyframes spikeFade {
+    0%, 100% { opacity: 1; stroke-width: 2.5px; }
+    40%, 75% { opacity: 0.12; stroke-width: 1px; }
+}
+
+.waveform-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+.dsp-arrow-icon { color: var(--cyan); font-weight: bold; }
 .noise-cross { width: 200px; opacity: 0.7; }
 .noise-wave { animation: waveDraw 2s ease-out both; }
 @keyframes waveDraw {
