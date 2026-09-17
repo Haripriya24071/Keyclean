@@ -1,6 +1,18 @@
+from typing import List, Tuple, Dict, Any
 import numpy as np
 
-def detect_keystrokes(y, sr, frame_size=512, hop_size=128, threshold=12.0, low_threshold=2.5, mode="standard", rolling_window=150, pre_pad_sec=0.005, post_pad_sec=0.015):
+def detect_keystrokes(
+    y: np.ndarray, 
+    sr: int, 
+    frame_size: int = 512, 
+    hop_size: int = 128, 
+    threshold: float = 12.0, 
+    low_threshold: float = 2.5, 
+    mode: str = "standard", 
+    rolling_window: int = 150, 
+    pre_pad_sec: float = 0.005, 
+    post_pad_sec: float = 0.015
+) -> Tuple[List[Tuple[int, int]], Dict[str, Any]]:
     """
     Detect keystroke click noise in an audio signal using spectral flux and high-frequency energy ratio,
     with a robust Median/MAD z-score rolling baseline.

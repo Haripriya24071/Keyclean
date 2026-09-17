@@ -1,6 +1,7 @@
+from typing import List, Tuple
 import numpy as np
 
-def inpaint_gaps(y, gaps):
+def inpaint_gaps(y: np.ndarray, gaps: List[Tuple[int, int]]) -> np.ndarray:
     """
     Reconstructs audio in the gaps (list of (start, end) sample index tuples) by taking 
     nearby audio on both sides, time-reversing it, and crossfading it.
