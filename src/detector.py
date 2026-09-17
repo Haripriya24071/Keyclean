@@ -35,9 +35,19 @@ def detect_keystrokes(y, sr, frame_size=512, hop_size=128, threshold=12.0, low_t
     metrics_info : dict
         Debugging and plotting info (z_scores, onset_strength, etc.)
     """
+    y = np.nan_to_num(np.asarray(y, dtype=np.float32), nan=0.0, posinf=0.0, neginf=0.0)
     n_samples = len(y)
-    if n_samples < frame_size:
-        return [], {"z_scores": [], "onset_strength": []}
+    
+    if n_samples < frame_size or np.max(np.abs(y)) < 1e-7:
+        return [], {
+            "z_scores": [],
+            "onset_strength": [],
+            "sf": [],
+            "hf_ratio": [],
+            "frames_t": [],
+            "mode": mode,
+            "low_threshold": low_threshold
+        }
         
     # Generate Hanning window
     win = np.hanning(frame_size)
