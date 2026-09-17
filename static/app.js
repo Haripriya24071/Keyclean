@@ -362,6 +362,19 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('File selection cleared', 'info', 1500);
     });
 
+    // ── Audio Playback Speed Controls ──
+    document.querySelectorAll('.speed-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const speed = parseFloat(btn.getAttribute('data-speed') || 1.0);
+            document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            document.querySelectorAll('audio').forEach(aud => {
+                aud.playbackRate = speed;
+            });
+        });
+    });
+
     // ── Canvas Chart
     const dspCanvas = document.getElementById('dsp-canvas');
     let ctx = dspCanvas ? dspCanvas.getContext('2d') : null;
