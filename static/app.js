@@ -333,11 +333,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     dropZone?.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
 
+    const SUPPORTED_EXTENSIONS = ['.wav', '.mp3', '.m4a', '.flac', '.ogg'];
+
     function handleFiles(files) {
         if (!files?.length) return;
         const file = files[0];
-        if (!file.name.endsWith('.wav')) {
-            showToast("Only .wav files are supported. Try converting your audio first.", "error");
+        const ext = '.' + file.name.split('.').pop().toLowerCase();
+        if (!SUPPORTED_EXTENSIONS.includes(ext)) {
+            showToast("Unsupported format. Supported formats: .wav, .mp3, .m4a, .flac, .ogg", "error");
             return;
         }
         selectedFile = file;
@@ -610,10 +613,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const msg = err?.message || String(err);
         if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('Load failed')) {
             showToast("Can't reach the server. Is the FastAPI backend running?", 'error');
+        } else if (msg.includes('ffmpeg is required')) {
+            showToast("ffmpeg is required to process MP3/M4A files. Please install ffmpeg or upload a .wav, .flac, or .ogg file.", 'error');
+        } else if (msg.includes('Unsupported file format') || msg.includes('Supported formats')) {
+            showToast(msg, 'error');
         } else if (msg.includes('500') || msg.includes('Internal Server Error') || msg.includes('processing this file')) {
             showToast("Something went wrong processing this file. Try a shorter clip.", 'error');
-        } else if (msg.includes('.wav') || msg.includes('standard WAV')) {
-            showToast("Only .wav files are supported. Try converting your audio first.", 'error');
         } else {
             showToast(msg, 'error');
         }
