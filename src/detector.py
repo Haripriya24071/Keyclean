@@ -1,6 +1,6 @@
 import numpy as np
 
-def detect_keystrokes(y, sr, frame_size=512, hop_size=128, threshold=12.0, rolling_window=150, pre_pad_sec=0.005, post_pad_sec=0.015):
+def detect_keystrokes(y, sr, frame_size=512, hop_size=128, threshold=12.0, low_threshold=2.5, mode="standard", rolling_window=150, pre_pad_sec=0.005, post_pad_sec=0.015):
     """
     Detect keystroke click noise in an audio signal using spectral flux and high-frequency energy ratio,
     with a robust Median/MAD z-score rolling baseline.
@@ -17,6 +17,10 @@ def detect_keystrokes(y, sr, frame_size=512, hop_size=128, threshold=12.0, rolli
         Hop size between frames.
     threshold : float
         MAD Z-score threshold for click onset detection defaults to 12.0.
+    low_threshold : float
+        Low Z-score threshold for double-threshold hysteresis tracing. Defaults to 2.5.
+    mode : str
+        Detection mode: "standard" (single threshold) or "hysteresis" (double threshold trace-back).
     rolling_window : int
         Number of historical frames to calculate baseline median/MAD.
     pre_pad_sec : float
@@ -82,17 +86,32 @@ def detect_keystrokes(y, sr, frame_size=512, hop_size=128, threshold=12.0, rolli
         z_scores[i] = (onset_strength[i] - med) / (1.4826 * mad + 1e-5)
         
     # 5. Extract click onset frames and map to sample indices
-    detected_frames = np.where(z_scores > threshold)[0]
-    
     pre_samples = int(pre_pad_sec * sr)
     post_samples = int(post_pad_sec * sr)
     
     raw_intervals = []
-    for f in detected_frames:
-        onset_sample = f * hop_size
-        start_sample = max(0, onset_sample - pre_samples)
-        end_sample = min(n_samples, onset_sample + post_samples)
-        raw_intervals.append((start_sample, end_sample))
+    
+    if mode == "hysteresis":
+        peaks = np.where(z_scores >= threshold)[0]
+        for p in peaks:
+            start_frame = p
+            while start_frame > 0 and z_scores[start_frame] >= low_threshold:
+                start_frame -= 1
+                
+            end_frame = p
+            while end_frame < n_frames - 1 and z_scores[end_frame] >= low_threshold:
+                end_frame += 1
+                
+            start_sample = max(0, start_frame * hop_size - pre_samples)
+            end_sample = min(n_samples, end_frame * hop_size + post_samples)
+            raw_intervals.append((start_sample, end_sample))
+    else:
+        detected_frames = np.where(z_scores > threshold)[0]
+        for f in detected_frames:
+            onset_sample = f * hop_size
+            start_sample = max(0, onset_sample - pre_samples)
+            end_sample = min(n_samples, onset_sample + post_samples)
+            raw_intervals.append((start_sample, end_sample))
         
     # Merge overlapping intervals
     gaps = []
@@ -113,7 +132,9 @@ def detect_keystrokes(y, sr, frame_size=512, hop_size=128, threshold=12.0, rolli
         "onset_strength": onset_strength.tolist(),
         "sf": sf.tolist(),
         "hf_ratio": hf_ratio.tolist(),
-        "frames_t": (np.arange(n_frames) * hop_size / sr).tolist()
+        "frames_t": (np.arange(n_frames) * hop_size / sr).tolist(),
+        "mode": mode,
+        "low_threshold": low_threshold
     }
     
     return gaps, metrics_info
