@@ -87,8 +87,14 @@ def evaluate_detections(gaps, ground_truth_secs, sr, tolerance_sec=0.03):
 
 def main():
     parser = argparse.ArgumentParser(description="KeyClean Audio Denoiser Demo Runner")
-    parser.add_argument("--real", type=str, help="Path to real WAV file to clean (bypasses synthetic generation)")
+    parser.add_argument("--real", type=str, help="Path to real audio file to clean (bypasses synthetic generation)")
     parser.add_argument("--threshold", type=float, default=12.0, help="Detector Z-score threshold (default: 12.0)")
+    parser.add_argument("--low-threshold", type=float, default=2.5, help="Hysteresis low threshold (default: 2.5)")
+    parser.add_argument("--mode", type=str, choices=["standard", "hysteresis"], default="standard", help="Detection mode (default: standard)")
+    parser.add_argument("--pre-pad", type=float, default=0.005, help="Pre-onset padding in seconds (default: 0.005)")
+    parser.add_argument("--post-pad", type=float, default=0.015, help="Post-onset padding in seconds (default: 0.015)")
+    parser.add_argument("--rolling-window", type=int, default=150, help="MAD baseline rolling window (default: 150)")
+    parser.add_argument("--output", type=str, default="data/cleaned.wav", help="Output path for cleaned audio file")
     args = parser.parse_args()
     
     os.makedirs("data", exist_ok=True)
@@ -103,16 +109,23 @@ def main():
         print(f"Audio loaded: {len(y)} samples @ {sr}Hz ({len(y)/sr:.2f}s)")
         
         # Run detection
-        gaps, _ = detect_keystrokes(y, sr, threshold=args.threshold)
+        gaps, _ = detect_keystrokes(
+            y, sr, 
+            threshold=args.threshold,
+            low_threshold=args.low_threshold,
+            mode=args.mode,
+            pre_pad_sec=args.pre_pad,
+            post_pad_sec=args.post_pad,
+            rolling_window=args.rolling_window
+        )
         print(f"Detected {len(gaps)} potential click intervals.")
         
         # Run inpainting
         y_clean = inpaint_gaps(y, gaps)
         
         # Save cleaned file
-        out_path = "data/cleaned.wav"
-        save_wav(out_path, y_clean, sr)
-        print(f"Cleaned audio saved to: {out_path}")
+        save_wav(args.output, y_clean, sr)
+        print(f"Cleaned audio saved to: {args.output}")
         
     else:
         print("Running KeyClean Synthetic Benchmark...")
@@ -128,16 +141,24 @@ def main():
         save_wav("data/noisy.wav", noisy, sr)
         print("Generated files 'data/voice_only_reference.wav' and 'data/noisy.wav'")
         
-        # 2. Run detection (adjust params to fine-tune recall/precision targets)
-        gaps, _ = detect_keystrokes(noisy, sr, threshold=args.threshold, pre_pad_sec=0.005, post_pad_sec=0.015)
+        # 2. Run detection
+        gaps, _ = detect_keystrokes(
+            noisy, sr, 
+            threshold=args.threshold,
+            low_threshold=args.low_threshold,
+            mode=args.mode,
+            pre_pad_sec=args.pre_pad, 
+            post_pad_sec=args.post_pad,
+            rolling_window=args.rolling_window
+        )
         
         # 3. Evaluate results
         metrics = evaluate_detections(gaps, gt_times, sr)
         
         # 4. Inpaint noise
         cleaned = inpaint_gaps(noisy, gaps)
-        save_wav("data/cleaned.wav", cleaned, sr)
-        print("Inpainted and saved cleaned output to 'data/cleaned.wav'")
+        save_wav(args.output, cleaned, sr)
+        print(f"Inpainted and saved cleaned output to '{args.output}'")
         
         # Output Benchmarking Metrics
         print("\n" + "="*40)
@@ -151,6 +172,7 @@ def main():
         print(f"Precision:                      {metrics['precision']:.2f}")
         print(f"Recall:                         {metrics['recall']:.2f}")
         print(f"F1-Score:                       {metrics['f1']:.2f}")
+        print(f"Mean Timing Offset Error:       {metrics['mean_timing_error_ms']:.2f} ms")
         print("="*40)
         
 if __name__ == "__main__":
