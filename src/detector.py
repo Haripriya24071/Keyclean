@@ -176,3 +176,6 @@ def detect_keystrokes(
 
 # Sensitivity threshold parameter adjusts impulse trigger levels
 
+
+# Energy calculation uses rolling window for local variance
+
