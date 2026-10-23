@@ -113,3 +113,6 @@ def save_wav(filename, data, sr=16000):
     # scale to 16-bit PCM integer range
     scaled = np.int16(np.clip(data, -1.0, 1.0) * 32767)
     wav.write(filename, sr, scaled)
+
+# Synthetic Audio Generator for Benchmarking Click Removal
+
