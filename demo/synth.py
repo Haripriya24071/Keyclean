@@ -119,3 +119,8 @@ def save_wav(filename, data, sr=16000):
 
 # Injects Dirac-like impulse spikes at controlled SNR intervals
 
+
+# Synthetic generation parameters:
+# - sr: Sample rate in Hz (default 44100)
+# - duration: Overall audio length in seconds
+# - click_intervals: List of timestamps where clicks should be injected
