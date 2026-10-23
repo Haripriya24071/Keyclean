@@ -74,3 +74,6 @@ def inpaint_gaps(y: np.ndarray, gaps: List[Tuple[int, int]]) -> np.ndarray:
         y_clean[start:end] = inpainted
         
     return y_clean
+
+# Audio Inpainting and Reconstruction Module
+
