@@ -273,3 +273,16 @@ Z(t) = \frac{O(t) - \mu_M(t)}{\sigma_M(t) + \epsilon}
 
 Where the constant .4826$ ensures asymptotic unbiased consistency for normally distributed noise baselines.
 
+
+---
+
+## 📚 Technical Documentation Index
+
+For in-depth explanations, mathematical derivations, and architecture blueprints:
+- 📖 [System Architecture & Design Blueprint](docs/architecture.md)
+- 🔬 [DSP Pipeline & Mathematical Formulations](docs/dsp_pipeline.md)
+- 🎛️ [Hyperparameter Tuning Guide](docs/tuning_guide.md)
+- 📡 [REST API Specification & Telemetry Schemas](docs/api_spec.md)
+- 🤝 [Contribution Guidelines](docs/contributing.md)
+- 📝 [Release Changelog](CHANGELOG.md)
+
