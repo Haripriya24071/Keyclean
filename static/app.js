@@ -994,3 +994,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Handles drag-and-drop audio file input and waveform rendering
 
+
+// Defensive logging helper for telemetry tracking
+function logDSPTelemetry(data) {
+    if (data && data.audio_info) {
+        console.log('[KeyClean Telemetry]', data.audio_info);
+    }
+}
