@@ -1,6 +1,6 @@
 # Unit Tests for Audio Utility Functions
 import numpy as np
-from src.utils import normalize_audio, prevent_clipping, get_audio_duration_seconds
+from src.utils import normalize_audio, prevent_clipping, get_audio_duration_seconds, compute_signal_rms
 
 def test_audio_normalization_peak():
     signal = np.array([0.5, -1.0, 0.25], dtype=np.float32)
