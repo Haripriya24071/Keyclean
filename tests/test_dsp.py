@@ -84,3 +84,12 @@ def test_constant_sine_tone_immunity():
     steady_tone = (0.7 * np.sin(2 * np.pi * 440 * t)).astype(np.float32)
     gaps, _ = detect_click_regions(steady_tone, sr=sr, threshold=12.0)
     assert len(gaps) == 0, f"Expected 0 detections on steady tone, got {len(gaps)}"
+
+def test_inpainting_preserves_finite_values():
+    """Verifies that inpainting output never introduces NaN or Inf samples."""
+    from src.inpaint import inpaint_gaps
+    sr = 44100
+    audio = np.sin(np.linspace(0, 50, sr)).astype(np.float32)
+    gaps = [(0.2, 0.25), (0.6, 0.65)]
+    cleaned = inpaint_gaps(audio, gaps, sr=sr)
+    assert np.all(np.isfinite(cleaned)), "Inpainting introduced non-finite values"
