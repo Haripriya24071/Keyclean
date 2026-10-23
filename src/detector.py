@@ -179,3 +179,8 @@ def detect_keystrokes(
 
 # Energy calculation uses rolling window for local variance
 
+
+# Type annotation helper for feature array shape verification
+def verify_feature_shapes(spectral_flux: np.ndarray, hf_ratio: np.ndarray) -> bool:
+    """Verifies that spectral flux and HF ratio vectors have matching dimensions."""
+    return spectral_flux.ndim == 1 and spectral_flux.shape == hf_ratio.shape
