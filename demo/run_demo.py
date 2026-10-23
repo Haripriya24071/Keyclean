@@ -177,3 +177,6 @@ def main():
         
 if __name__ == "__main__":
     main()
+
+# CLI Demo Runner for KeyClean DSP Pipeline
+
