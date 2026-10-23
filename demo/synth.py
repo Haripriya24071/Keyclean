@@ -124,3 +124,11 @@ def save_wav(filename, data, sr=16000):
 # - sr: Sample rate in Hz (default 44100)
 # - duration: Overall audio length in seconds
 # - click_intervals: List of timestamps where clicks should be injected
+
+def create_synthetic_click_impulse(duration_sec: float = 0.003, sr: int = 44100) -> np.ndarray:
+    """Synthesizes high-frequency decaying impulse click spike."""
+    n_samples = int(duration_sec * sr)
+    t = np.linspace(0, duration_sec, n_samples)
+    freq = 4500.0  # Dominant 4.5 kHz switch strike resonance
+    envelope = np.exp(-t * 1200.0)
+    return (np.sin(2 * np.pi * freq * t) * envelope).astype(np.float32)
