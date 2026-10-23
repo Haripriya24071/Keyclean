@@ -81,3 +81,13 @@ if __name__ == "__main__":
 
 # Evaluates F1 score against ground truth synthetic masks
 
+
+from typing import Dict, Any
+
+def get_default_search_grid() -> Dict[str, list]:
+    """Returns parameter sweep candidate values for hyperparameter optimization."""
+    return {
+        'threshold': [8.0, 10.0, 12.0, 14.0],
+        'pre_pad_sec': [0.003, 0.005, 0.008],
+        'post_pad_sec': [0.010, 0.015, 0.020]
+    }
