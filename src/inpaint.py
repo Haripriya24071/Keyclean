@@ -89,3 +89,9 @@ from typing import List, Tuple
 def validate_inpaint_inputs(audio: np.ndarray, gaps: List[Tuple[float, float]], sr: int) -> bool:
     """Validates parameters supplied to inpainting routines."""
     return audio is not None and sr > 0 and isinstance(gaps, list)
+
+def clamp_gap_bounds(start_sample: int, end_sample: int, total_samples: int) -> Tuple[int, int]:
+    """Clamps gap sample indices to valid array bounds [0, total_samples]."""
+    s = max(0, min(start_sample, total_samples))
+    e = max(s, min(end_sample, total_samples))
+    return s, e
