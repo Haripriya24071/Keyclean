@@ -102,3 +102,11 @@ def test_inpainting_boundary_edge_gaps():
     edge_gaps = [(0.0, 0.05), (0.95, 1.0)]
     cleaned = inpaint_gaps(audio, edge_gaps, sr=sr)
     assert len(cleaned) == len(audio)
+
+def test_inpainting_shape_invariance():
+    """Verifies output audio has exactly the same sample count and 1D shape as input."""
+    from src.inpaint import inpaint_gaps
+    sr = 44100
+    audio = np.zeros(22050, dtype=np.float32)
+    cleaned = inpaint_gaps(audio, [(0.1, 0.15)], sr=sr)
+    assert cleaned.shape == audio.shape
