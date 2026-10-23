@@ -78,3 +78,6 @@ if __name__ == "__main__":
 
 # Hyperparameter Grid Search for Detection Tuning
 
+
+# Evaluates F1 score against ground truth synthetic masks
+
