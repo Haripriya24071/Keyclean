@@ -239,3 +239,14 @@ KeyClean features a modern, responsive web application interface designed for re
 3. **Interactive Mechanical Switch Simulator**: Virtual keyboard interface providing instant audio-visual feedback when keys are struck.
 4. **Synchronized Waveform Playback Controller**: Dual A/B player controls allowing instant toggling between unprocessed microphone audio and cleaned output.
 
+
+### 🎚️ Keyboard Switch Noise Profiles & Tuning Matrix
+
+| Switch Type | Acoustic Signature | Dominant Frequency | Recommended Mode | Sensitivity |
+| :--- | :--- | :---: | :--- | :---: |
+| **Cherry MX Blue (Clicky)** | Sharp click + keybed bottoming | 4.2 kHz - 7.5 kHz | Hysteresis | 7.0 - 9.0 |
+| **Cherry MX Brown (Tactile)** | Moderate bump + release clack | 3.1 kHz - 5.8 kHz | Standard / Hysteresis | 10.0 - 12.0 |
+| **Cherry MX Red (Linear)** | Bottoming thud & rebound | 2.8 kHz - 4.5 kHz | Standard | 12.0 - 14.0 |
+| **Laptop Scissor Switches** | Rapid high-pitch tick | 5.0 kHz - 8.2 kHz | Standard | 14.0 - 18.0 |
+| **Membrane Keyboards** | Soft low-frequency thump | < 2.5 kHz | Conservative | 18.0 - 24.0 |
+
