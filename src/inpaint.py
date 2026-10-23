@@ -105,3 +105,7 @@ def generate_s_curve_weights(length: int) -> np.ndarray:
 def is_valid_gap_duration(start_sec: float, end_sec: float, min_duration: float = 0.001) -> bool:
     """Ensures gap segment has positive duration greater than min_duration."""
     return (end_sec - start_sec) >= min_duration
+
+def linear_interpolate_gap(left_val: float, right_val: float, num_samples: int) -> np.ndarray:
+    """Generates linear interpolation fill when boundary context window is very short."""
+    return np.linspace(left_val, right_val, num_samples, dtype=np.float32)
