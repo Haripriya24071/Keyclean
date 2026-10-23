@@ -59,3 +59,11 @@ if __name__ == "__main__":
 
 # Verifies energy conservation and boundary continuity
 
+
+def test_silence_returns_no_detections():
+    """Verifies that purely silent audio returns empty detected gaps list."""
+    from src.detector import detect_click_regions
+    sr = 44100
+    silence = np.zeros(sr * 2, dtype=np.float32)
+    gaps, _ = detect_click_regions(silence, sr=sr, threshold=10.0)
+    assert len(gaps) == 0, f"Expected 0 detections in silence, got {len(gaps)}"
