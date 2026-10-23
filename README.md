@@ -211,3 +211,6 @@ python tests/test_dsp.py
 **Hari Priya**
 - GitHub: [@Haripriya24071](https://github.com/Haripriya24071)
 - Project Repository: [Keyclean](https://github.com/Haripriya24071/Keyclean)
+
+<!-- KeyClean: Audio De-clicking and Noise Inpainting Toolkit -->
+
