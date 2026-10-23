@@ -52,3 +52,7 @@ def compute_signal_rms(signal: np.ndarray) -> float:
     if signal is None or len(signal) == 0:
         return 0.0
     return float(np.sqrt(np.mean(signal.astype(np.float64)**2)))
+
+def prevent_clipping(signal: np.ndarray, max_val: float = 0.99) -> np.ndarray:
+    """Clamps audio peak amplitudes to safe [-max_val, max_val] margin."""
+    return np.clip(signal, -max_val, max_val).astype(np.float32)
