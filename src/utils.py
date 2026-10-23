@@ -38,3 +38,11 @@ def resample_audio(audio: np.ndarray, orig_sr: int, target_sr: int = 16000) -> t
 
 # Peak and RMS normalization helper routines
 
+
+from typing import Optional
+
+def get_audio_duration_seconds(audio: np.ndarray, sr: int) -> float:
+    """Calculates audio duration in fractional seconds."""
+    if audio is None or sr <= 0:
+        return 0.0
+    return float(len(audio)) / float(sr)
