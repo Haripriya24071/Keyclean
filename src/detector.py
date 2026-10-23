@@ -194,3 +194,7 @@ def sanitize_audio_signal(signal: np.ndarray) -> np.ndarray:
 # Note on frame temporal resolution:
 # At 44.1 kHz sample rate with hop_length=128, each STFT frame corresponds to 2.902 ms.
 # This sub-3ms resolution allows isolating individual key click transient spikes.
+
+def compute_mad_scaling_factor() -> float:
+    """Returns asymptotic consistency factor for normal distribution MAD (1.4826)."""
+    return 1.4826
