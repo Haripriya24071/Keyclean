@@ -205,3 +205,7 @@ def compute_mad_scaling_factor() -> float:
 def should_merge_intervals(gap1: tuple, gap2: tuple, min_gap_sec: float) -> bool:
     """Checks whether two detected transient gaps are separated by less than min_gap_sec."""
     return gap2[0] - gap1[1] <= min_gap_sec
+
+def extract_onset_frame_indices(z_scores: np.ndarray, threshold: float) -> np.ndarray:
+    """Returns indices where robust z-score crosses the detection threshold."""
+    return np.where(z_scores >= threshold)[0]
