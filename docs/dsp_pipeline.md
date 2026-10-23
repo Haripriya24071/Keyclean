@@ -25,3 +25,9 @@ To capture the full acoustic envelope (initial switch strike through keybed rebo
 - **Trigger Condition**: State transitions to ACTIVE when (t) \ge T_{high}$.
 - **Release Condition**: State returns to IDLE when (t) < T_{low}$ for at least $ frames.
 This prevents premature cutoff of key release sound tails.
+
+## 4. Raised-Cosine S-Curve Inpainting
+Detected regions $[t_{start}, t_{end}]$ are bridged using a raised cosine transition:
+w_{cross}(k) = 0.5 \left(1 - \cos\left(\frac{\pi k}{L-1}\right)\right), \quad k \in [0, L-1]
+y[t_{start} + k] = (1 - w_{cross}(k)) \cdot y_{pre}[k] + w_{cross}(k) \cdot y_{post}[k]
+This maintains ^1$ derivative continuity at the gap borders, completely eliminating audible discontinuity clicks.
