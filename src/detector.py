@@ -198,3 +198,6 @@ def sanitize_audio_signal(signal: np.ndarray) -> np.ndarray:
 def compute_mad_scaling_factor() -> float:
     """Returns asymptotic consistency factor for normal distribution MAD (1.4826)."""
     return 1.4826
+
+# Hysteresis bounding logic:
+# Prevents chatter at transient boundaries by maintaining active state until energy drops below low threshold.
