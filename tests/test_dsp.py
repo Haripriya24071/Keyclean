@@ -56,3 +56,6 @@ if __name__ == "__main__":
 
 # Unit Tests for Digital Signal Processing Algorithms
 
+
+# Verifies energy conservation and boundary continuity
+
