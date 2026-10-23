@@ -93,3 +93,12 @@ def test_inpainting_preserves_finite_values():
     gaps = [(0.2, 0.25), (0.6, 0.65)]
     cleaned = inpaint_gaps(audio, gaps, sr=sr)
     assert np.all(np.isfinite(cleaned)), "Inpainting introduced non-finite values"
+
+def test_inpainting_boundary_edge_gaps():
+    """Verifies safe handling when click transients occur at sample 0 or final sample."""
+    from src.inpaint import inpaint_gaps
+    sr = 44100
+    audio = np.ones(sr, dtype=np.float32) * 0.5
+    edge_gaps = [(0.0, 0.05), (0.95, 1.0)]
+    cleaned = inpaint_gaps(audio, edge_gaps, sr=sr)
+    assert len(cleaned) == len(audio)
