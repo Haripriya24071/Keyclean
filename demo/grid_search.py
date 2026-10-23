@@ -97,3 +97,12 @@ def calculate_f1_score(precision: float, recall: float) -> float:
     if (precision + recall) == 0.0:
         return 0.0
     return 2.0 * (precision * recall) / (precision + recall)
+
+def format_grid_results(results: list) -> str:
+    """Formats top-performing parameter combinations into leaderboard string."""
+    headers = "Rank | Threshold | PrePad | PostPad | F1-Score"
+    divider = "-----+-----------+--------+---------+---------"
+    rows = [headers, divider]
+    for rank, item in enumerate(results[:5], 1):
+        rows.append(f"{rank:4d} | {item.get('threshold', 0):9.1f} | {item.get('pre_pad', 0):6.3f} | {item.get('post_pad', 0):7.3f} | {item.get('f1', 0):8.3f}")
+    return "\n".join(rows)
