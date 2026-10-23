@@ -1231,3 +1231,11 @@ canvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
 
 /* Responsive layout adjustments for mobile audio controls */
 
+
+/* Smooth hover transition for DSP slider thumbs */
+input[type=range]::-webkit-slider-thumb {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
