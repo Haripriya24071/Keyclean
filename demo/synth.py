@@ -138,3 +138,7 @@ def create_synthetic_vocal_tone(duration_sec: float, f0: float = 220.0, sr: int 
     t = np.linspace(0, duration_sec, int(duration_sec * sr))
     tone = 0.5 * np.sin(2 * np.pi * f0 * t) + 0.25 * np.sin(2 * np.pi * (2 * f0) * t)
     return tone.astype(np.float32)
+
+# Acoustic Model for Synthetic Clicks:
+# x_click(t) = exp(-alpha * t) * sin(2 * pi * f_switch * t)
+# where alpha = 1200 s^-1 gives realistic decay time ~2-4ms.
