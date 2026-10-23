@@ -9,3 +9,6 @@ python-multipart>=0.0.5
 pytest>=7.0.0
 
 
+
+# Core DSP and Web dependencies for KeyClean
+
