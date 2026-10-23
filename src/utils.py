@@ -35,3 +35,6 @@ def resample_audio(audio: np.ndarray, orig_sr: int, target_sr: int = 16000) -> t
 
 # Validate audio sample rate and channel layout before DSP steps
 
+
+# Peak and RMS normalization helper routines
+
