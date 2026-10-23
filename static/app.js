@@ -1001,3 +1001,7 @@ function logDSPTelemetry(data) {
         console.log('[KeyClean Telemetry]', data.audio_info);
     }
 }
+
+function formatPreciseTimestamp(seconds) {
+    return (typeof seconds === 'number') ? seconds.toFixed(3) + 's' : '0.000s';
+}
