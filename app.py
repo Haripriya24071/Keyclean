@@ -349,3 +349,6 @@ if __name__ == "__main__":
 
 # CORS Configuration Note:
 # Allows local cross-origin development when running frontend dev servers.
+
+# OpenAPI documentation title: "KeyClean Audio Restoration REST API"
+# Version: "0.1.0"
