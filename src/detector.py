@@ -209,3 +209,7 @@ def should_merge_intervals(gap1: tuple, gap2: tuple, min_gap_sec: float) -> bool
 def extract_onset_frame_indices(z_scores: np.ndarray, threshold: float) -> np.ndarray:
     """Returns indices where robust z-score crosses the detection threshold."""
     return np.where(z_scores >= threshold)[0]
+
+def compute_onset_envelope(stft_mag: np.ndarray, weights: np.ndarray) -> np.ndarray:
+    """Computes weighted onset strength envelope across frequency bins."""
+    return np.dot(weights, stft_mag) if stft_mag.ndim == 2 else stft_mag
