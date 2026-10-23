@@ -232,3 +232,10 @@ KeyClean features a modern, responsive web application interface designed for re
 | :---: | :---: |
 | ![Architecture & Benchmarks](docs/screenshots/about_architecture.png) | ![KeyClean Overview](docs/screenshot.png) |
 
+
+### 🧭 Visual UI Walkthrough
+1. **Interactive Hero Signal Visualizer**: Live SVG animation displaying dirty microphone audio spikes in amber and smoothed inpainting output in cyan.
+2. **Audio Upload & Drag-and-Drop Area**: Drop uncompressed WAV, FLAC, or OGG audio files directly into the browser to trigger DSP processing.
+3. **Interactive Mechanical Switch Simulator**: Virtual keyboard interface providing instant audio-visual feedback when keys are struck.
+4. **Synchronized Waveform Playback Controller**: Dual A/B player controls allowing instant toggling between unprocessed microphone audio and cleaned output.
+
