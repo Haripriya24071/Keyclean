@@ -19,6 +19,20 @@ function navigate(page) {
 // Expose globally for onclick usage in HTML
 window.navigate = navigate;
 
+// Enable direct hash-based routing (#home, #dashboard, #about)
+window.addEventListener('hashchange', () => {
+    const page = window.location.hash.replace('#', '');
+    if (page && ['home', 'dashboard', 'about'].includes(page)) {
+        navigate(page);
+    }
+});
+window.addEventListener('DOMContentLoaded', () => {
+    const page = window.location.hash.replace('#', '');
+    if (page && ['home', 'dashboard', 'about'].includes(page)) {
+        navigate(page);
+    }
+});
+
 
 // ── INTERACTIVE KEYBOARD ─────────────────────────────────────────────────
 function initKeyboard() {
