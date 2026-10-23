@@ -184,3 +184,9 @@ def detect_keystrokes(
 def verify_feature_shapes(spectral_flux: np.ndarray, hf_ratio: np.ndarray) -> bool:
     """Verifies that spectral flux and HF ratio vectors have matching dimensions."""
     return spectral_flux.ndim == 1 and spectral_flux.shape == hf_ratio.shape
+
+def sanitize_audio_signal(signal: np.ndarray) -> np.ndarray:
+    """Replaces NaNs and Infs with 0.0 and returns sanitized float32 array."""
+    if signal is None or len(signal) == 0:
+        return np.zeros(0, dtype=np.float32)
+    return np.nan_to_num(signal, nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32)
