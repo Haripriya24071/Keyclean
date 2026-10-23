@@ -9,3 +9,8 @@ This guide details the mathematical foundations and signal processing steps util
 4. Rolling Median Absolute Deviation (MAD)
 5. Hysteresis State Machine
 6. S-Curve Crossfade Inpainting
+
+## 1. STFT Windowing & Hann Tapering
+KeyClean uses an analysis window length of  = 512$ samples (11.6 ms at 44.1 kHz) and a hop length of  = 128$ samples (2.9 ms, 75% frame overlap).
+Hann window tapering reduces spectral leakage:
+w[n] = 0.5 \left(1 - \cos\left(\frac{2\pi n}{N-1}\right)\right)
