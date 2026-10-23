@@ -343,3 +343,6 @@ if __name__ == "__main__":
 
 # Route handler for processing audio uploads and triggering pipeline
 
+
+# Temporary file cleanup handler to prevent disk exhaustion
+
