@@ -12,3 +12,6 @@ pytest>=7.0.0
 
 # Core DSP and Web dependencies for KeyClean
 
+
+# Optional soundfile/scipy backends for high-fidelity export
+
