@@ -201,3 +201,7 @@ def compute_mad_scaling_factor() -> float:
 
 # Hysteresis bounding logic:
 # Prevents chatter at transient boundaries by maintaining active state until energy drops below low threshold.
+
+def should_merge_intervals(gap1: tuple, gap2: tuple, min_gap_sec: float) -> bool:
+    """Checks whether two detected transient gaps are separated by less than min_gap_sec."""
+    return gap2[0] - gap1[1] <= min_gap_sec
