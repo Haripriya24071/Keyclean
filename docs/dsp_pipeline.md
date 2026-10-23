@@ -19,3 +19,9 @@ w[n] = 0.5 \left(1 - \cos\left(\frac{2\pi n}{N-1}\right)\right)
 Mechanical key switches produce substantial acoustic acoustic emissions between 3 kHz and 8 kHz.
 KeyClean calculates the ratio of energy in this frequency band relative to total spectral frame energy:
 R_{HF}(t) = \frac{\sum_{f \ge 3000\text{Hz}} |X(f, t)|^2}{\sum_{f} |X(f, t)|^2 + \delta}
+
+## 3. Hysteresis Double Threshold State Machine
+To capture the full acoustic envelope (initial switch strike through keybed rebound):
+- **Trigger Condition**: State transitions to ACTIVE when (t) \ge T_{high}$.
+- **Release Condition**: State returns to IDLE when (t) < T_{low}$ for at least $ frames.
+This prevents premature cutoff of key release sound tails.
