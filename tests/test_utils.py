@@ -12,3 +12,9 @@ def test_prevent_clipping_bounds():
     clamped = prevent_clipping(overshot, max_val=0.99)
     assert np.max(clamped) <= 0.99
     assert np.min(clamped) >= -0.99
+
+def test_audio_duration_calculation():
+    sr = 44100
+    audio = np.zeros(sr * 3, dtype=np.float32)
+    duration = get_audio_duration_seconds(audio, sr)
+    assert abs(duration - 3.0) < 1e-4
