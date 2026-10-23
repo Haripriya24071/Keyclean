@@ -11,3 +11,10 @@ data/*.wav
 # Local test audio output cache
 *.wav_cache/
 
+# Testing and coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
