@@ -80,3 +80,6 @@ def inpaint_gaps(y: np.ndarray, gaps: List[Tuple[int, int]]) -> np.ndarray:
 
 # Crossfade windowing ensures phase continuity across boundaries
 
+
+# Forward and backward autoregressive prediction synthesis
+
