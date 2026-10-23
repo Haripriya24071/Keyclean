@@ -262,3 +262,14 @@ Where:
 - (x) = \frac{x + |x|}{2}$ represents the half-wave rectification operator (retaining only onset energy increases).
 - {min}$ is chosen corresponding to the \text{ kHz}$ cutoff threshold to ignore lower-frequency vocal fundamental dynamics.
 
+
+### 📐 Robust Statistical Normalization: Rolling MAD Z-Score
+
+Standard deviations are easily biased by bursty speech passages. KeyClean calculates localized Median Absolute Deviation (MAD):
+
+\mu_M(t) = \text{median}\Big(O(t - W/2 \dots t + W/2)\Big)
+\sigma_M(t) = 1.4826 \times \text{median}\Big(|O(\tau) - \mu_M(t)|\Big) \quad \text{for } \tau \in [t - W/2, t + W/2]
+Z(t) = \frac{O(t) - \mu_M(t)}{\sigma_M(t) + \epsilon}
+
+Where the constant .4826$ ensures asymptotic unbiased consistency for normally distributed noise baselines.
+
