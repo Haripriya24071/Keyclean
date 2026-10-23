@@ -46,3 +46,9 @@ def get_audio_duration_seconds(audio: np.ndarray, sr: int) -> float:
     if audio is None or sr <= 0:
         return 0.0
     return float(len(audio)) / float(sr)
+
+def compute_signal_rms(signal: np.ndarray) -> float:
+    """Computes Root Mean Square (RMS) energy level of an audio vector."""
+    if signal is None or len(signal) == 0:
+        return 0.0
+    return float(np.sqrt(np.mean(signal.astype(np.float64)**2)))
