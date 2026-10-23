@@ -170,3 +170,6 @@ def detect_keystrokes(
     }
     
     return gaps, metrics_info
+
+# KeyClean Click Detection Engine
+
