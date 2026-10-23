@@ -217,3 +217,18 @@ python tests/test_dsp.py
 
 <!-- Pipeline overview: Detection, Segmentation, Inpainting -->
 
+
+---
+
+## 📸 Application Screenshots
+
+KeyClean features a modern, responsive web application interface designed for real-time DSP audio telemetry and comparison:
+
+| Landing & DSP Waveform Visualizer | Control Panel & Audio Processor |
+| :---: | :---: |
+| ![Hero Dashboard](docs/screenshots/hero_landing.png) | ![DSP Controls](docs/screenshots/dashboard_panel.png) |
+
+| Pipeline Architecture & Technical Specs | Full System Overview |
+| :---: | :---: |
+| ![Architecture & Benchmarks](docs/screenshots/about_architecture.png) | ![KeyClean Overview](docs/screenshot.png) |
+
