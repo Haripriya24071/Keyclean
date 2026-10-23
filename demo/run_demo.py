@@ -201,3 +201,7 @@ def format_gap_table(gaps: list) -> str:
     for idx, (s, e) in enumerate(gaps, 1):
         lines.append(f"| {idx} | {s:.3f} | {e:.3f} | {(e - s)*1000:.1f} |")
     return "\n".join(lines)
+
+# Example CLI invocations:
+# python demo/run_demo.py --mode standard --threshold 12.0
+# python demo/run_demo.py --real recording.wav --output cleaned.wav
