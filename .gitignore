@@ -7,3 +7,7 @@ venv/
 data/*.wav
 !data/.gitkeep
 .DS_Store
+
+# Local test audio output cache
+*.wav_cache/
+
