@@ -286,3 +286,8 @@ For in-depth explanations, mathematical derivations, and architecture blueprints
 - 🤝 [Contribution Guidelines](docs/contributing.md)
 - 📝 [Release Changelog](CHANGELOG.md)
 
+
+---
+
+### ⭐ KeyClean Philosophy
+Built with precision DSP mathematics, zero cloud bloat, and respect for user audio privacy.
