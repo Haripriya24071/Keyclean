@@ -75,3 +75,12 @@ def test_hysteresis_low_threshold_bounding():
     signal = np.random.randn(sr).astype(np.float32) * 0.01
     gaps, _ = detect_click_regions(signal, sr=sr, mode="hysteresis", threshold=10.0, low_threshold=15.0)
     assert isinstance(gaps, list)
+
+def test_constant_sine_tone_immunity():
+    """Verifies that a steady 440 Hz vocal fundamental tone does not trigger click onset."""
+    from src.detector import detect_click_regions
+    sr = 44100
+    t = np.linspace(0, 1.0, sr)
+    steady_tone = (0.7 * np.sin(2 * np.pi * 440 * t)).astype(np.float32)
+    gaps, _ = detect_click_regions(steady_tone, sr=sr, threshold=12.0)
+    assert len(gaps) == 0, f"Expected 0 detections on steady tone, got {len(gaps)}"
