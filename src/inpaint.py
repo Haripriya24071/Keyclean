@@ -95,3 +95,9 @@ def clamp_gap_bounds(start_sample: int, end_sample: int, total_samples: int) -> 
     s = max(0, min(start_sample, total_samples))
     e = max(s, min(end_sample, total_samples))
     return s, e
+
+def generate_s_curve_weights(length: int) -> np.ndarray:
+    """Generates raised cosine transition weights in range [0, 1]."""
+    if length <= 1:
+        return np.ones(length, dtype=np.float32)
+    return 0.5 * (1.0 - np.cos(np.linspace(0, np.pi, length, dtype=np.float32)))
