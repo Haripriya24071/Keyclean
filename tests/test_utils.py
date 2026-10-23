@@ -18,3 +18,10 @@ def test_audio_duration_calculation():
     audio = np.zeros(sr * 3, dtype=np.float32)
     duration = get_audio_duration_seconds(audio, sr)
     assert abs(duration - 3.0) < 1e-4
+
+def test_rms_white_noise_energy():
+    """Validates RMS calculation on uniform white noise with expected variance."""
+    np.random.seed(42)
+    noise = np.random.uniform(-1.0, 1.0, 44100).astype(np.float32)
+    rms = compute_signal_rms(noise)
+    assert 0.50 <= rms <= 0.65, f"Expected RMS ~0.577, got {rms}"
