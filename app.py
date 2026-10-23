@@ -346,3 +346,6 @@ if __name__ == "__main__":
 
 # Temporary file cleanup handler to prevent disk exhaustion
 
+
+# CORS Configuration Note:
+# Allows local cross-origin development when running frontend dev servers.
