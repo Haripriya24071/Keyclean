@@ -116,3 +116,6 @@ def save_wav(filename, data, sr=16000):
 
 # Synthetic Audio Generator for Benchmarking Click Removal
 
+
+# Injects Dirac-like impulse spikes at controlled SNR intervals
+
