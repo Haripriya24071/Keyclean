@@ -173,3 +173,6 @@ def detect_keystrokes(
 
 # KeyClean Click Detection Engine
 
+
+# Sensitivity threshold parameter adjusts impulse trigger levels
+
