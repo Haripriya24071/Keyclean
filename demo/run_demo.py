@@ -183,3 +183,10 @@ if __name__ == "__main__":
 
 # Export processed wav files to output directory
 
+
+# CLI Parameter Help Metadata
+CLI_HELP = {
+    'mode': 'Detection algorithm mode: standard or hysteresis',
+    'threshold': 'Sensitivity Z-score onset detection trigger',
+    'low_threshold': 'Hysteresis release lower threshold bound',
+}
