@@ -190,3 +190,7 @@ CLI_HELP = {
     'threshold': 'Sensitivity Z-score onset detection trigger',
     'low_threshold': 'Hysteresis release lower threshold bound',
 }
+
+def format_execution_time(elapsed_sec: float) -> str:
+    """Formats processing execution latency into human-readable milliseconds."""
+    return f"{elapsed_sec * 1000.0:.2f} ms"
