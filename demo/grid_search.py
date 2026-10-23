@@ -91,3 +91,9 @@ def get_default_search_grid() -> Dict[str, list]:
         'pre_pad_sec': [0.003, 0.005, 0.008],
         'post_pad_sec': [0.010, 0.015, 0.020]
     }
+
+def calculate_f1_score(precision: float, recall: float) -> float:
+    """Calculates harmonic mean F1-score from precision and recall."""
+    if (precision + recall) == 0.0:
+        return 0.0
+    return 2.0 * (precision * recall) / (precision + recall)
