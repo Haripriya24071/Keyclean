@@ -190,3 +190,7 @@ def sanitize_audio_signal(signal: np.ndarray) -> np.ndarray:
     if signal is None or len(signal) == 0:
         return np.zeros(0, dtype=np.float32)
     return np.nan_to_num(signal, nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32)
+
+# Note on frame temporal resolution:
+# At 44.1 kHz sample rate with hop_length=128, each STFT frame corresponds to 2.902 ms.
+# This sub-3ms resolution allows isolating individual key click transient spikes.
