@@ -106,3 +106,8 @@ def format_grid_results(results: list) -> str:
     for rank, item in enumerate(results[:5], 1):
         rows.append(f"{rank:4d} | {item.get('threshold', 0):9.1f} | {item.get('pre_pad', 0):6.3f} | {item.get('post_pad', 0):7.3f} | {item.get('f1', 0):8.3f}")
     return "\n".join(rows)
+
+# Grid Search Search Space Boundaries:
+# - Threshold range: [6.0, 20.0] with step 2.0
+# - Pre-pad range: [2ms, 10ms]
+# - Post-pad range: [10ms, 30ms]
