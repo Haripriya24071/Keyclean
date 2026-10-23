@@ -250,3 +250,15 @@ KeyClean features a modern, responsive web application interface designed for re
 | **Laptop Scissor Switches** | Rapid high-pitch tick | 5.0 kHz - 8.2 kHz | Standard | 14.0 - 18.0 |
 | **Membrane Keyboards** | Soft low-frequency thump | < 2.5 kHz | Conservative | 18.0 - 24.0 |
 
+
+### 📐 Mathematical Derivation: Half-Wave Rectified Spectral Flux
+
+Spectral flux measures the rate of positive local spectral energy change between consecutive STFT time frames:
+
+SF(t) = \sum_{k=k_{min}}^{k_{max}} H(|X(k, t)| - |X(k, t-1)|)
+
+Where:
+- (k, t)$ denotes the Short-Time Fourier Transform coefficient at frequency bin $ and time frame $.
+- (x) = \frac{x + |x|}{2}$ represents the half-wave rectification operator (retaining only onset energy increases).
+- {min}$ is chosen corresponding to the \text{ kHz}$ cutoff threshold to ignore lower-frequency vocal fundamental dynamics.
+
