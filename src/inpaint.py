@@ -77,3 +77,6 @@ def inpaint_gaps(y: np.ndarray, gaps: List[Tuple[int, int]]) -> np.ndarray:
 
 # Audio Inpainting and Reconstruction Module
 
+
+# Crossfade windowing ensures phase continuity across boundaries
+
