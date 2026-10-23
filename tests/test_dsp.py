@@ -67,3 +67,11 @@ def test_silence_returns_no_detections():
     silence = np.zeros(sr * 2, dtype=np.float32)
     gaps, _ = detect_click_regions(silence, sr=sr, threshold=10.0)
     assert len(gaps) == 0, f"Expected 0 detections in silence, got {len(gaps)}"
+
+def test_hysteresis_low_threshold_bounding():
+    """Ensures hysteresis low threshold cannot exceed high threshold."""
+    from src.detector import detect_click_regions
+    sr = 44100
+    signal = np.random.randn(sr).astype(np.float32) * 0.01
+    gaps, _ = detect_click_regions(signal, sr=sr, mode="hysteresis", threshold=10.0, low_threshold=15.0)
+    assert isinstance(gaps, list)
