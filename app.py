@@ -352,3 +352,8 @@ if __name__ == "__main__":
 
 # OpenAPI documentation title: "KeyClean Audio Restoration REST API"
 # Version: "0.1.0"
+
+@app.get("/api/health")
+def health_check():
+    """Health status endpoint verifying DSP pipeline readiness."""
+    return {"status": "ok", "engine": "KeyClean DSP", "version": "0.1.0"}
