@@ -977,3 +977,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // KeyClean Client Application Logic
 
+
+// Handles drag-and-drop audio file input and waveform rendering
+
