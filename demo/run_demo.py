@@ -194,3 +194,10 @@ CLI_HELP = {
 def format_execution_time(elapsed_sec: float) -> str:
     """Formats processing execution latency into human-readable milliseconds."""
     return f"{elapsed_sec * 1000.0:.2f} ms"
+
+def format_gap_table(gaps: list) -> str:
+    """Formats list of detected gap intervals as formatted summary table."""
+    lines = ["| Index | Start (s) | End (s) | Duration (ms) |", "|:---:|:---:|:---:|:---:|"]
+    for idx, (s, e) in enumerate(gaps, 1):
+        lines.append(f"| {idx} | {s:.3f} | {e:.3f} | {(e - s)*1000:.1f} |")
+    return "\n".join(lines)
