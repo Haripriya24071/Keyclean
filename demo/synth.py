@@ -132,3 +132,9 @@ def create_synthetic_click_impulse(duration_sec: float = 0.003, sr: int = 44100)
     freq = 4500.0  # Dominant 4.5 kHz switch strike resonance
     envelope = np.exp(-t * 1200.0)
     return (np.sin(2 * np.pi * freq * t) * envelope).astype(np.float32)
+
+def create_synthetic_vocal_tone(duration_sec: float, f0: float = 220.0, sr: int = 44100) -> np.ndarray:
+    """Synthesizes voice-like harmonic tone with fundamental f0 and overtones."""
+    t = np.linspace(0, duration_sec, int(duration_sec * sr))
+    tone = 0.5 * np.sin(2 * np.pi * f0 * t) + 0.25 * np.sin(2 * np.pi * (2 * f0) * t)
+    return tone.astype(np.float32)
