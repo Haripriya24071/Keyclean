@@ -83,3 +83,9 @@ def inpaint_gaps(y: np.ndarray, gaps: List[Tuple[int, int]]) -> np.ndarray:
 
 # Forward and backward autoregressive prediction synthesis
 
+
+from typing import List, Tuple
+
+def validate_inpaint_inputs(audio: np.ndarray, gaps: List[Tuple[float, float]], sr: int) -> bool:
+    """Validates parameters supplied to inpainting routines."""
+    return audio is not None and sr > 0 and isinstance(gaps, list)
