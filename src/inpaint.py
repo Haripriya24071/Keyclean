@@ -101,3 +101,7 @@ def generate_s_curve_weights(length: int) -> np.ndarray:
     if length <= 1:
         return np.ones(length, dtype=np.float32)
     return 0.5 * (1.0 - np.cos(np.linspace(0, np.pi, length, dtype=np.float32)))
+
+def is_valid_gap_duration(start_sec: float, end_sec: float, min_duration: float = 0.001) -> bool:
+    """Ensures gap segment has positive duration greater than min_duration."""
+    return (end_sec - start_sec) >= min_duration
