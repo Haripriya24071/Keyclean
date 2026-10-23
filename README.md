@@ -214,3 +214,6 @@ python tests/test_dsp.py
 
 <!-- KeyClean: Audio De-clicking and Noise Inpainting Toolkit -->
 
+
+<!-- Pipeline overview: Detection, Segmentation, Inpainting -->
+
